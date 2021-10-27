@@ -1,0 +1,41 @@
+{
+  "name": "stack-tools",
+  "version": "0.1.0",
+  "description": "Utilites for printing and parsing errors and their stacks",
+  "license": "MIT",
+  "repository": "conartist6/stack-tools",
+  "main": "lib/index.js",
+  "files": [
+    "lib/*"
+  ],
+  "author": {
+    "name": "Conrad Buck",
+    "email": "conartist6@gmail.com",
+    "url": "https://github.com/conartist6"
+  },
+  "scripts": {
+    "clean": "run-p clean:*",
+    "clean:js": "rimraf lib",
+    "build": "run-s clean build:nearley build:js",
+    "build:js": "rimraf lib && babel -d lib src",
+    "build:nearley": "cd src/v8/parse/internal/nearley && nearleyc error.ne -o error.js && nearleyc frame.ne -o frame.js && nearleyc frame-strict.ne -o frame-strict.js",
+    "test": "ava",
+    "verify": "run-s build:js test"
+  },
+  "dependencies": {
+    "iserror": "0.0.2",
+    "moo": "^0.5.1",
+    "nearley": "^2.20.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.8",
+    "@babel/plugin-transform-modules-commonjs": "^7.15.4",
+    "ava": "^3.15.0",
+    "common-tags": "^1.8.0",
+    "coveralls": "^3.0.9",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "source-map-support": "^0.5.20"
+  }
+}
