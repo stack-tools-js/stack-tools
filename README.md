@@ -104,7 +104,3 @@ try {
   console.error(printErrors(errors));
 }
 ```
-
-## License
-
-MIT © [Conrad Buck](https://github.com/conartist6)
