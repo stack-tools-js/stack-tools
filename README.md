@@ -60,13 +60,13 @@ try {
 
 v8 defines the following methods:
 
-- `parseError`
-- `parseErrors`
-- `printError`
-- `printErrors`
-- `isInternalFrame`
-- `cleanError(error, predicate = isInternalFrame)`
-- `cleanErrors(errors, predicate = isInternalFrame)`
+- `parseError(errror)` returns a parsed error
+- `parseErrors(errors)` returns an array of parsed errors
+- `printError(parsedError)` returns as string with the printed error
+- `printErrors(parsedErrors)` returns a string with the printed errors
+- `isInternalFrame(frame)` returns `true` if frame is internal.
+- `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
+- `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.
 
 ### node
 
@@ -75,7 +75,7 @@ The node environment extends the v8 environment with a definition of `isInternal
 ```js
 import getPackageName from 'get-package-name';
 import {
-  isInternalFrame,
+  isInternalFrame as isNodeInternalFrame,
   parseErrors,
   cleanErrors,
   printErrors,
@@ -86,20 +86,20 @@ const internalPackages = new Set([
   'test-runner',
 ]);
 
+const isInternalFrame = (frame) => {
+  return (
+    isNodeInternalFrame(frame) ||
+    (frame.site.type === 'file' &&
+      internalPackages.has(getPackageName(frame.site.file)))
+  );
+};
+
 try {
   doStuff();
 } catch (e) {
   const errors = parseErrors(e);
 
-  cleanErrors(
-    errors,
-    (frame) =>
-      isInternalFrame(frame) ||
-      (frame.site.type === 'file' &&
-        internalPackages.has(
-          getPackageName(frame.site.file),
-        )),
-  );
+  cleanErrors(errors, isInternalFrame);
 
   console.error(printErrors(errors));
 }
