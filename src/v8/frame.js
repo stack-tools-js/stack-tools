@@ -131,6 +131,8 @@ function printEval(callSite, evalCallSite) {
 }
 
 function printFrame(frame) {
+  if (typeof frame === 'string') return frame;
+
   if (frame.call === null && frame.site.type === 'omitted') {
     return `  at <omitted>`;
   }

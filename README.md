@@ -51,7 +51,6 @@ try {
 } catch (e) {
   const errors = parseErrors(e);
 
-  // cleanErrors mutates errors, but also returns them for chaining
   cleanErrors(errors);
 
   console.error(printErrors(errors));

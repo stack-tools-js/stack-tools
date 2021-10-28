@@ -48,9 +48,12 @@ function printErrors(errors, options = {}) {
   let first = true;
   let str = '';
   for (let i = 0; i < parsedErrors.length; i++) {
-    if (!first) str += '\n';
+    if (!first) {
+      str += '\n';
+      str += typeof cause !== 'string' && cause.prefix ? cause.prefix : 'Caused by: ';
+    }
     const cause = parsedErrors[i];
-    if (cause.prefix) str += cause.prefix;
+
     str += printError(cause, options);
     first = false;
   }
