@@ -29,7 +29,7 @@ The general API provides these methods:
 - `captureFrames(omitFrames = 1)` returns the stack trace at the caller's location, omitting the last `omitFrames` frames. The default is to omit one frame, which would be the frame for `captureStack` itself.
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``
-- `printErrorHeaders(error)` returns `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}`
+- `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}` ``
 - `printError(error)` returns `` `${printHeader(errror)}\n${error.stack}` ``
 - `printErrors(error)` returns `` `${printError(error)}\nCaused by: ${printErrors(error.cause)}` ``
 
@@ -44,7 +44,7 @@ import {
   parseErrors,
   cleanErrors,
   printErrors,
-} from 'stack-tools/node';
+} from 'stack-tools/v8';
 
 try {
   doStuff();
@@ -71,6 +71,39 @@ v8 defines the following methods:
 ### node
 
 The node environment extends the v8 environment with a definition of `isInternalFrame` that includes node internals.
+
+```js
+import getPackageName from 'get-package-name';
+import {
+  isInternalFrame,
+  parseErrors,
+  cleanErrors,
+  printErrors,
+} from 'stack-tools/node';
+
+const internalPackages = new Set([
+  'my-package',
+  'test-runner',
+]);
+
+try {
+  doStuff();
+} catch (e) {
+  const errors = parseErrors(e);
+
+  cleanErrors(
+    errors,
+    (frame) =>
+      isInternalFrame(frame) ||
+      (frame.site.type === 'file' &&
+        internalPackages.has(
+          getPackageName(frame.site.file),
+        )),
+  );
+
+  console.error(printErrors(errors));
+}
+```
 
 ## License
 
