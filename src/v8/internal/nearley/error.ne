@@ -27,13 +27,12 @@ ErrorStack ->
 ErrorWithPrefix -> Prefix:? Error
 {% (d) => {
   const error = d[1];
-  if (d[0]) error.prefix = d[0];
-  return error;
+  return d[0] ? {...error, prefix: d[0]} : error;
 } %}
 
 # FubarError: message
 #     at frame
-Error -> Message NL Stack
+Error -> Message NL:+ Stack
 {% (d) => ({ message: d[0], stack: d[2] }) %}
 
 # FubarError: There was extreme and terrible errorness

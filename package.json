@@ -18,7 +18,7 @@
     "clean:js": "rimraf lib",
     "build": "run-s clean build:nearley build:js",
     "build:js": "rimraf lib && babel -d lib src && copyfiles -u 1 'src/**/*.d.ts' lib",
-    "build:nearley": "cd src/v8/parse/internal/nearley && nearleyc error.ne -o error.js && nearleyc frame.ne -o frame.js && nearleyc frame-strict.ne -o frame-strict.js",
+    "build:nearley": "cd src/v8/internal/nearley && nearleyc error.ne -o error.js && nearleyc frame.ne -o frame.js && nearleyc frame-strict.ne -o frame-strict.js",
     "test": "ava",
     "verify": "run-s build:js test"
   },

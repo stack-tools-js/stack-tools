@@ -25,14 +25,6 @@ Extra
 
 # https://perishablepress.com/stop-using-unsafe-characters-in-urls/
 
-# Reserved characters must be encoded when not used for their intended purpose
-Reserved
-  ":" | "/" | "?" | "#" | "[" | "]" | "@" | "!" | "$" | "&" | "'" | "(" | ")" | "*" | "+" | "," | ";" | "="
-
-# Unsafe characters must always be encoded
-Unsafe
-  "<" | ">" | "%" | "{" | "}" | "|" | "\\" | "^" | "`"
-
 Reserved
   GenDelims | SubDelims
 

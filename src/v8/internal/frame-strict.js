@@ -9,4 +9,4 @@ function parseFrameStrict(str) {
   return parseUnambiguous(FrameGrammar, str);
 }
 
-module.exports = parseFrameStrict;
+module.exports = { parseFrameStrict };

@@ -1,6 +1,6 @@
 [
   {
-    "string": "    at Object.[foo] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.[foo] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -18,7 +18,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.<anonymous> (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.<anonymous> (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -36,7 +36,7 @@
     "strict": true
   },
   {
-    "string": "    at Module._compile (module.js:571:32)",
+    "string": "  at Module._compile (module.js:571:32)",
     "object": {
       "call": {
         "constructor": false,
@@ -54,7 +54,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.Module._extensions..js (module.js:580:10)",
+    "string": "  at Object.Module._extensions..js (module.js:580:10)",
     "object": {
       "call": {
         "constructor": false,
@@ -72,7 +72,7 @@
     "strict": true
   },
   {
-    "string": "    at Module.load (module.js:488:32)",
+    "string": "  at Module.load (module.js:488:32)",
     "object": {
       "call": {
         "constructor": false,
@@ -90,7 +90,7 @@
     "strict": true
   },
   {
-    "string": "    at tryModuleLoad (module.js:447:12)",
+    "string": "  at tryModuleLoad (module.js:447:12)",
     "object": {
       "call": {
         "constructor": false,
@@ -108,7 +108,7 @@
     "strict": true
   },
   {
-    "string": "    at Function.Module._load (module.js:439:3)",
+    "string": "  at Function.Module._load (module.js:439:3)",
     "object": {
       "call": {
         "constructor": false,
@@ -126,7 +126,7 @@
     "strict": true
   },
   {
-    "string": "    at Module.runMain (module.js:605:10)",
+    "string": "  at Module.runMain (module.js:605:10)",
     "object": {
       "call": {
         "constructor": false,
@@ -144,7 +144,7 @@
     "strict": true
   },
   {
-    "string": "    at run (bootstrap_node.js:418:7)",
+    "string": "  at run (bootstrap_node.js:418:7)",
     "object": {
       "call": {
         "constructor": false,
@@ -162,7 +162,7 @@
     "strict": true
   },
   {
-    "string": "    at startup (bootstrap_node.js:139:9)",
+    "string": "  at startup (bootstrap_node.js:139:9)",
     "object": {
       "call": {
         "constructor": false,
@@ -180,7 +180,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.asdf ][)( \u0000\u0001\u0002\u0003\u001b[44;37m foo (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.asdf ][)( \u0000\u0001\u0002\u0003\u001b[44;37m foo (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -198,7 +198,7 @@
     "strict": false
   },
   {
-    "string": "    at Object.asdf (__dirname/generate-parse-fixture.js:419:60) (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.asdf (__dirname/generate-parse-fixture.js:419:60) (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -216,7 +216,7 @@
     "strict": false
   },
   {
-    "string": "    at Object.a (s) d [f] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.a (s) d [f] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -234,7 +234,7 @@
     "strict": false
   },
   {
-    "string": "    at Object.eval (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.eval (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -252,7 +252,7 @@
     "strict": true
   },
   {
-    "string": "    at eval (eval at <anonymous> (__dirname/generate-parse-fixture.js:419:60), <anonymous>:1:5)",
+    "string": "  at eval (eval at <anonymous> (__dirname/generate-parse-fixture.js:419:60), <anonymous>:1:5)",
     "object": {
       "call": {
         "constructor": false,
@@ -283,7 +283,7 @@
     "strict": true
   },
   {
-    "string": "    at eval (eval at evalFunction (a file with eval .js:1:23), <anonymous>:1:5)",
+    "string": "  at eval (eval at evalFunction (a file with eval .js:1:23), <anonymous>:1:5)",
     "object": {
       "call": {
         "constructor": false,
@@ -314,7 +314,7 @@
     "strict": true
   },
   {
-    "string": "    at evalFunction (a file with eval .js:1:23)",
+    "string": "  at evalFunction (a file with eval .js:1:23)",
     "object": {
       "call": {
         "constructor": false,
@@ -332,7 +332,7 @@
     "strict": true
   },
   {
-    "string": "    at a file with eval .js:1:41",
+    "string": "  at a file with eval .js:1:41",
     "object": {
       "call": null,
       "site": {
@@ -345,7 +345,7 @@
     "strict": true
   },
   {
-    "string": "    at eval (eval at <anonymous> (a file with eval .js:1:1), <anonymous>:1:5)",
+    "string": "  at eval (eval at <anonymous> (a file with eval .js:1:1), <anonymous>:1:5)",
     "object": {
       "call": {
         "async": false,
@@ -376,7 +376,7 @@
     "strict": true
   },
   {
-    "string": "    at ContextifyScript.Script.runInContext (vm.js:32:29)",
+    "string": "  at ContextifyScript.Script.runInContext (vm.js:32:29)",
     "object": {
       "call": {
         "constructor": false,
@@ -394,7 +394,7 @@
     "strict": true
   },
   {
-    "string": "    at ContextifyScript.Script.runInNewContext (vm.js:38:15)",
+    "string": "  at ContextifyScript.Script.runInNewContext (vm.js:38:15)",
     "object": {
       "call": {
         "constructor": false,
@@ -412,7 +412,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.exports.runInNewContext (vm.js:60:17)",
+    "string": "  at Object.exports.runInNewContext (vm.js:60:17)",
     "object": {
       "call": {
         "constructor": false,
@@ -430,7 +430,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.function ctor (file.js:1:2)     <anonymous> (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.function ctor (file.js:1:2)     <anonymous> (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -448,7 +448,7 @@
     "strict": false
   },
   {
-    "string": "    at eval (eval at <anonymous> (__dirname/generate-parse-fixture.js:419:60), <anonymous>:3:5)",
+    "string": "  at eval (eval at <anonymous> (__dirname/generate-parse-fixture.js:419:60), <anonymous>:3:5)",
     "object": {
       "call": {
         "constructor": false,
@@ -479,7 +479,7 @@
     "strict": true
   },
   {
-    "string": "    at Object.[Symbol.iterator] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.[Symbol.iterator] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -497,7 +497,7 @@
     "strict": true
   },
   {
-    "string": "    at Classy.[Symbol.iterator] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Classy.[Symbol.iterator] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -515,7 +515,7 @@
     "strict": true
   },
   {
-    "string": "    at [some (weird) [<symbolism>]] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at [some (weird) [<symbolism>]] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -533,7 +533,7 @@
     "strict": false
   },
   {
-    "string": "    at Object.[some (weird) [<symbolism>]] [as foo] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.[some (weird) [<symbolism>]] [as foo] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -551,7 +551,7 @@
     "strict": false
   },
   {
-    "string": "    at OtherClass.[some (weird) [<symbolism>]] [as foo] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at OtherClass.[some (weird) [<symbolism>]] [as foo] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -569,7 +569,7 @@
     "strict": false
   },
   {
-    "string": "    at Object.a (w) [<s>] (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at Object.a (w) [<s>] (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -587,7 +587,7 @@
     "strict": false
   },
   {
-    "string": "    at evalmachine.<anonymous>:1:17",
+    "string": "  at evalmachine.<anonymous>:1:17",
     "object": {
       "call": null,
       "site": {
@@ -600,8 +600,8 @@
     "strict": false
   },
   {
-    "string": "    at x (     f[i](l<e>:.js:1:2)    :1:33)",
-    "stringNormal": "    at x (f[i](l<e>:.js:1:2):1:33)",
+    "string": "  at x (     f[i](l<e>:.js:1:2)    :1:33)",
+    "stringNormal": "  at x (f[i](l<e>:.js:1:2):1:33)",
     "object": {
       "call": {
         "constructor": false,
@@ -619,8 +619,8 @@
     "strict": false
   },
   {
-    "string": "    at      f[i](l<e>:.js:1:2)    :2:1",
-    "stringNormal": "    at f[i](l<e>:.js:1:2):2:1",
+    "string": "  at      f[i](l<e>:.js:1:2)    :2:1",
+    "stringNormal": "  at f[i](l<e>:.js:1:2):2:1",
     "object": {
       "call": null,
       "site": {
@@ -633,7 +633,7 @@
     "strict": false
   },
   {
-    "string": "    at new Foo (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at new Foo (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": true,
@@ -651,7 +651,7 @@
     "strict": true
   },
   {
-    "string": "    at arr.map.n (__dirname/generate-parse-fixture.js:419:60)",
+    "string": "  at arr.map.n (__dirname/generate-parse-fixture.js:419:60)",
     "object": {
       "call": {
         "constructor": false,
@@ -669,7 +669,7 @@
     "strict": true
   },
   {
-    "string": "    at Array.map (native)",
+    "string": "  at Array.map (native)",
     "object": {
       "call": {
         "constructor": false,
@@ -684,7 +684,7 @@
     "strict": true
   },
   {
-    "string": "    at generatorFunction.next (<anonymous>)",
+    "string": "  at generatorFunction.next (<anonymous>)",
     "object": {
       "call": {
         "constructor": false,
@@ -699,7 +699,7 @@
     "strict": true
   },
   {
-    "string": "    at async Promise.all (index 12)",
+    "string": "  at async Promise.all (index 12)",
     "object": {
       "call": {
         "constructor": false,

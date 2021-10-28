@@ -18,6 +18,7 @@ Frame ->
     Text _ "(" _ "eval" __ "at" __ CallSite _ ("," _ Site):? _ ")"
       {% (d) => buildFrame(d[0], get(d, 10, 2), d[8]) %}
     | CallSite {% id %}
+    | "<" "omitted" ">" {% (d) => buildCallSite(null, { type: "omitted" }) %}
   ) _ {% (d) => d[3] %}
 
 # file.js:1:23
@@ -45,7 +46,6 @@ Modifier ->
 Site ->
   Path _ ":" _ Number _ ":" _ Number
   {% (d) => ({ ...d[0], line: d[4], column: d[8] }) %}
-  # Omit position when function is anonymous
   | "<" "anonymous" ">"
   {% () => ({ type: "anonymous" }) %}
   | "native"

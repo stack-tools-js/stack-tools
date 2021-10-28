@@ -28,10 +28,11 @@ var grammar = {
     {"name": "ErrorWithPrefix$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "ErrorWithPrefix", "symbols": ["ErrorWithPrefix$ebnf$1", "Error"], "postprocess":  (d) => {
           const error = d[1];
-          if (d[0]) error.prefix = d[0];
-          return error;
+          return d[0] ? {...error, prefix: d[0]} : error;
         } },
-    {"name": "Error", "symbols": ["Message", "NL", "Stack"], "postprocess": (d) => ({ message: d[0], stack: d[2] })},
+    {"name": "Error$ebnf$1", "symbols": ["NL"]},
+    {"name": "Error$ebnf$1", "symbols": ["Error$ebnf$1", "NL"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "Error", "symbols": ["Message", "Error$ebnf$1", "Stack"], "postprocess": (d) => ({ message: d[0], stack: d[2] })},
     {"name": "Message$ebnf$1", "symbols": []},
     {"name": "Message$ebnf$1$subexpression$1", "symbols": ["NL", "Text"]},
     {"name": "Message$ebnf$1", "symbols": ["Message$ebnf$1", "Message$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},

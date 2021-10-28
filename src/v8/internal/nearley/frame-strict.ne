@@ -14,6 +14,8 @@ Frame ->
     FunctionName _ "(" _ "eval" __ "at" __ CallSite _ ( "," _ Site ):? _ ")"
       {% (d) => buildFrame(d[0], get(d, 10, 2), d[8]) %}
     | CallSite {% id %}
+    # stack-tools prints this when all frames are cleaned to avoid merging messages
+    | "<" "omitted" ">" {% (d) => buildCallSite(null, { type: "omitted" }) %}
   ) _ {% (d) => d[3] %}
 
 # file.js:1:23
