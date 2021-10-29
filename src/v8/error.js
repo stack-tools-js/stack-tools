@@ -60,7 +60,12 @@ function printError(error, options) {
 
   const { message = 'Error', stack } = parsedError;
 
-  return '' + message + '\n' + stack.map((frame) => printFrame(frame)).join('\n');
+  const printedStack =
+    typeof error.stack === 'string'
+      ? error.stack
+      : stack.map((frame) => printFrame(frame)).join('\n');
+
+  return '' + message + '\n' + printedStack;
 }
 
 function cleanError(error, predicate = isInternalFrame) {

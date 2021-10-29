@@ -9,12 +9,7 @@ test('can reprint a string error', (t) => {
     at mostInner (/home/conartist6/dev/repos/stack-utils/test/fixtures/produce-long-stack-traces.js:10:5)
   From previous event:
     at evenMoreInner (/home/conartist6/dev/repos/stack-utils/test/fixtures/produce-long-stack-traces.js:9:29)
-  From previous event:
-    at inner (/home/conartist6/dev/repos/stack-utils/test/fixtures/produce-long-stack-traces.js:8:28)
-  From previous event:
-    at outer (/home/conartist6/dev/repos/stack-utils/test/fixtures/produce-long-stack-traces.js:7:27)
-    at processImmediate (internal/timers.js:464:21)
-  From previous event:
+  From previous event: Bogus message
     at Object.<anonymous> (/home/conartist6/dev/repos/stack-utils/test/fixtures/produce-long-stack-traces.js:6:36)
     at Module._compile (internal/modules/cjs/loader.js:1072:14)
     at Module._extensions..js (internal/modules/cjs/loader.js:1101:10)
@@ -35,5 +30,19 @@ test('can reprint a string error', (t) => {
     at Module._compile (internal/modules/cjs/loader.js:1072:14)
     at Module._extensions..js (internal/modules/cjs/loader.js:1101:10)`;
 
-  t.is(printErrors(parseErrors(stack)), stack);
+  const parsed = parseErrors(stack);
+
+  t.like(parsed[0], {
+    message: 'ReferenceError: a is not defined',
+  });
+  t.like(parsed[1], {
+    prefix: 'From previous event:',
+    message: '',
+  });
+  t.like(parsed[2], {
+    prefix: 'From previous event:',
+    message: 'Bogus message',
+  });
+
+  t.is(printErrors(parsed), stack);
 });

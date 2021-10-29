@@ -17,18 +17,24 @@ const lexer = moo.compile({
 @lexer lexer
 
 ErrorStack ->
-  Error (NL ErrorWithPrefix):*
-  {% (d) => [d[0], ...d[1].map((d => d[1]))] %}
+  Error (NL Error):*
+  {% (d) => {
+    const first = d[0];
+    const rest = d[1] ? d[1].map((d => {
+      const error = d[1];
+      let { message, stack } = error;
+      const colonIdx = message.indexOf(':');
+      if (colonIdx >= 0) {
+        const prefix = message.slice(0, colonIdx + 1);
+        message = message.slice(colonIdx + 1).trimLeft();
+        return { message, stack, prefix };
+      }
+      return error;
+    })) : [];
+    return [first, ...rest];
+   } %}
   | Message
   {% (d) => [({ message: d[0] })] %}
-
-# Caused by: FubarError: message
-#     at frame
-ErrorWithPrefix -> Prefix:? Error
-{% (d) => {
-  const error = d[1];
-  return d[0] ? {...error, prefix: d[0]} : error;
-} %}
 
 # FubarError: message
 #     at frame

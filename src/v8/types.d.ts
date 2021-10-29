@@ -47,5 +47,5 @@ export type ParsedError = {
 export type PrintableError = {
   prefix?: string;
   message: string;
-  stack: Array<Frame | string>;
+  stack: string | Array<Frame | string>;
 };

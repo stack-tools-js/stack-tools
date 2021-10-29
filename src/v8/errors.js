@@ -48,13 +48,15 @@ function printErrors(errors, options = {}) {
   let first = true;
   let str = '';
   for (let i = 0; i < parsedErrors.length; i++) {
+    const error = parsedErrors[i];
+
     if (!first) {
       str += '\n';
-      str += typeof cause !== 'string' && cause.prefix ? cause.prefix : 'Caused by: ';
+      str += error.prefix ? error.prefix : 'Caused by:';
+      if (error.message) str += ' ';
     }
-    const cause = parsedErrors[i];
 
-    str += printError(cause, options);
+    str += printError(error, options);
     first = false;
   }
 

@@ -20,16 +20,24 @@ var grammar = {
     Lexer: lexer,
     ParserRules: [
     {"name": "ErrorStack$ebnf$1", "symbols": []},
-    {"name": "ErrorStack$ebnf$1$subexpression$1", "symbols": ["NL", "ErrorWithPrefix"]},
+    {"name": "ErrorStack$ebnf$1$subexpression$1", "symbols": ["NL", "Error"]},
     {"name": "ErrorStack$ebnf$1", "symbols": ["ErrorStack$ebnf$1", "ErrorStack$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "ErrorStack", "symbols": ["Error", "ErrorStack$ebnf$1"], "postprocess": (d) => [d[0], ...d[1].map((d => d[1]))]},
-    {"name": "ErrorStack", "symbols": ["Message"], "postprocess": (d) => [({ message: d[0] })]},
-    {"name": "ErrorWithPrefix$ebnf$1", "symbols": ["Prefix"], "postprocess": id},
-    {"name": "ErrorWithPrefix$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
-    {"name": "ErrorWithPrefix", "symbols": ["ErrorWithPrefix$ebnf$1", "Error"], "postprocess":  (d) => {
-          const error = d[1];
-          return d[0] ? {...error, prefix: d[0]} : error;
+    {"name": "ErrorStack", "symbols": ["Error", "ErrorStack$ebnf$1"], "postprocess":  (d) => {
+         const first = d[0];
+         const rest = d[1] ? d[1].map((d => {
+           const error = d[1];
+           let { message, stack } = error;
+           const colonIdx = message.indexOf(':');
+           if (colonIdx >= 0) {
+             const prefix = message.slice(0, colonIdx + 1);
+             message = message.slice(colonIdx + 1).trimLeft();
+             return { message, stack, prefix };
+           }
+           return error;
+         })) : [];
+         return [first, ...rest];
         } },
+    {"name": "ErrorStack", "symbols": ["Message"], "postprocess": (d) => [({ message: d[0] })]},
     {"name": "Error$ebnf$1", "symbols": ["NL"]},
     {"name": "Error$ebnf$1", "symbols": ["Error$ebnf$1", "NL"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "Error", "symbols": ["Message", "Error$ebnf$1", "Stack"], "postprocess": (d) => ({ message: d[0], stack: d[2] })},
