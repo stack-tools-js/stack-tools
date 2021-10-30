@@ -4,19 +4,31 @@ const isError = require('iserror');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
 const { parseFrame, printFrame, isInternalFrame } = require('./frame.js');
+const {
+  printFrames: basePrintFrames,
+  printError: basePrintError,
+  printErrorHeader: basePrintErrorHeader,
+} = require('../');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
-function parseError(error, options = {}) {
+function __parseError(error, options = {}) {
   const { strict = false } = options;
+  const parsedError = strict
+    ? parseUnambiguous(ErrorGrammar, error)
+    : parseUnambiguous(ErrorsGrammar, error)[0];
 
-  let stack;
+  const stack = parsedError.stack.map((frame) => parseFrame(frame));
 
+  return { ...error, stack };
+}
+
+function parseError(error, options) {
   if (isError(error)) {
-    ({ stack } = error);
+    return __parseError(error.stack, options);
   } else if (typeof error === 'string') {
-    stack = error;
+    return __parseError(error, options);
   } else {
     throw new TypeError(
       `error argument to parseError must be an Error or string but received \`${
@@ -24,48 +36,46 @@ function parseError(error, options = {}) {
       }\``,
     );
   }
+}
 
-  if (strict) {
-    const error = parseUnambiguous(ErrorGrammar, stack);
-
-    return {
-      ...error,
-      stack: error.stack.map((frame) => parseFrame(frame)),
-    };
-  } else {
-    const errors = parseUnambiguous(ErrorsGrammar, stack);
-
-    return errors.map((error) => ({
-      ...error,
-      stack: error.stack.map((frame) => parseFrame(frame)),
-    }));
-  }
+function __printError(error) {
+  const header = __printErrorHeader(error);
+  const stack = __printFrames(error);
+  return stack ? `${header}\n${stack}` : stack;
 }
 
 function printError(error, options) {
-  let parsedError;
-
   if (isError(error)) {
-    let { stack, message } = error;
-    if (!stack) {
-      parsedError = { message, stack };
-    } else {
-      const errors = parseErrors(stack, options);
-
-      parsedError = errors[0];
-    }
+    const parsedError = __parseError(error, options);
+    return __printError(parsedError);
   } else {
-    parsedError = error;
+    return __printError(error);
   }
+}
 
-  const { message = 'Error', stack } = parsedError;
+function __printErrorHeader(error) {
+  return error.message;
+}
 
-  const printedStack =
-    typeof error.stack === 'string'
-      ? error.stack
-      : stack.map((frame) => printFrame(frame)).join('\n');
+function printErrorHeader(error) {
+  if (isError(error)) {
+    return basePrintErrorHeader(error);
+  } else {
+    return __printErrorHeader(error);
+  }
+}
 
-  return '' + message + '\n' + printedStack;
+function __printFrames(error) {
+  const { stack } = error;
+  return typeof stack === 'string' ? stack : stack.map((frame) => printFrame(frame)).join('\n');
+}
+
+function printFrames(error) {
+  if (isError(error)) {
+    return basePrintFrames(error);
+  } else {
+    return __printFrames(error);
+  }
 }
 
 function cleanError(error, predicate = isInternalFrame) {
@@ -78,4 +88,4 @@ function cleanError(error, predicate = isInternalFrame) {
   return error;
 }
 
-module.exports = { printError, parseError, cleanError };
+module.exports = { parseError, printError, printErrorHeader, printFrames, cleanError };

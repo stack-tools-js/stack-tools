@@ -1,66 +1,89 @@
 const { Grammar } = require('nearley');
 const isError = require('iserror');
 
+const { printErrorHeaders: basePrintErrorHeaders } = require('../index');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
-const { parseError, printError, cleanError } = require('./error.js');
+const { parseError, printError, printErrorHeader, cleanError } = require('./error.js');
 const { parseFrame, isInternalFrame } = require('./frame.js');
 
-const { isArray } = Array;
+const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
+const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
-const ErrorGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
+function __parseError(error, options = {}) {
+  const { strict = false } = options;
+  const parsedErrors = strict
+    ? [parseUnambiguous(ErrorGrammar, error)]
+    : parseUnambiguous(ErrorsGrammar, error);
 
-function parseErrors(error, options = {}) {
-  if (isError(error)) {
+  return parsedErrors.map((error) => {
+    const stack = error.stack.map((frame) => parseFrame(frame));
+
+    return { ...error, stack };
+  });
+}
+
+function parseErrors(errors, options = {}) {
+  if (isError(errors)) {
     const chain = [];
 
-    for (let cause = error; cause; cause = cause.cause) {
-      const errorChain = parseError(error, options);
+    for (let cause = errors; cause; cause = cause.cause) {
+      const errorChain = __parseError(cause.stack, options);
       chain.push(...errorChain);
     }
     return chain;
-  } else if (typeof error !== 'string') {
-    throw new TypeError(
-      `error argument to parseError must be an Error or string but received \`${
-        error == null ? `${error}` : typeof error
-      }\``,
-    );
+  } else {
+    return __parseError(errors);
   }
-
-  return parseUnambiguous(ErrorGrammar, error).map((error) => ({
-    ...error,
-    stack: error.stack.map((frame) => parseFrame(frame)),
-  }));
 }
 
-function printErrors(errors, options = {}) {
-  let parsedErrors;
-
-  if (isError(errors)) {
-    parsedErrors = [];
-    for (let cause = errors; cause; cause = cause.cause) {
-      parsedErrors.push(parseError(cause, options));
-    }
-  } else if (isArray(errors)) {
-    parsedErrors = errors;
-  }
-
-  let first = true;
+function __printErrors(errors) {
   let str = '';
-  for (let i = 0; i < parsedErrors.length; i++) {
-    const error = parsedErrors[i];
+  for (let i = 0; i < errors.length; i++) {
+    const error = errors[i];
 
-    if (!first) {
+    if (i > 0) {
       str += '\n';
       str += error.prefix ? error.prefix : 'Caused by:';
       if (error.message) str += ' ';
     }
 
-    str += printError(error, options);
-    first = false;
+    str += printError(error);
   }
 
   return str;
+}
+
+function printErrors(errors, options) {
+  if (isError(errors)) {
+    const chain = [];
+    for (let cause = errors; cause; cause = cause.cause) {
+      chain.push(parseError(cause, options));
+    }
+    return __printErrors(chain);
+  } else {
+    return __printErrors(errors);
+  }
+}
+
+function __printErrorHeaders(errors) {
+  let str = '';
+  let first = true;
+  for (let i = 0; i < errors.length; i++) {
+    const error = errors[i];
+    if (i > 0) str += '\nCaused by: ';
+
+    str += printErrorHeader(error);
+  }
+  return str;
+}
+
+function printErrorHeaders(error) {
+  if (isError(error)) {
+    return basePrintErrorHeaders(error);
+  } else {
+    return __printErrorHeaders(error);
+  }
 }
 
 function cleanErrors(errors, predicate = isInternalFrame) {
@@ -69,4 +92,4 @@ function cleanErrors(errors, predicate = isInternalFrame) {
   }
 }
 
-module.exports = { printErrors, parseErrors, cleanErrors };
+module.exports = { parseErrors, printErrors, printErrorHeaders, cleanErrors };

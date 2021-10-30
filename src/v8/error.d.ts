@@ -4,4 +4,8 @@ export function parseError(error: Error | string, options?: Options): ParsedErro
 
 export function printError(error: Error | PrintableError, options?: Options): string;
 
+export function printErrorHeader(error: Error | PrintableError): string;
+
+export function printFrames(error: Error | PrintableError): string;
+
 export function cleanError(error: ParsedError): ParsedError;
