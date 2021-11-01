@@ -84,29 +84,26 @@ function printSite(site) {
   switch (site.type) {
     case 'anonymous':
       str += '<anonymous>';
+      if (site.line && site.column) {
+        str += `:${site.line}:${site.column}`;
+      }
       break;
     case 'native':
       str += 'native';
       break;
     case 'path':
-      str += site.path;
+      str += `${site.path}:${site.line}:${site.column}`;
       break;
-    case 'uri':
-      str += decodeURI(site.uri);
+    case 'uri': {
+      const file = decodeURI(`${site.scheme}://${site.path}`);
+      str += `${file}:${site.line}:${site.column}`;
       break;
+    }
     case 'index':
       str += `index ${site.index}`;
       break;
   }
 
-  switch (site.type) {
-    case 'anonymous':
-    case 'path':
-    case 'uri':
-      if (site.line) str += `:${site.line}`;
-      if (site.column) str += `:${site.column}`;
-      break;
-  }
   return str;
 }
 

@@ -46,7 +46,8 @@
       },
       "site": {
         "type": "uri",
-        "uri": "file://__dirname/generate-parse-fixture.js",
+        "scheme": "file",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -368,7 +369,22 @@
       "call": null,
       "site": {
         "type": "uri",
-        "uri": "file://a%20file%20with%20eval%20.js",
+        "scheme": "file",
+        "path": "a%20file%20with%20eval%20.js",
+        "line": 1,
+        "column": 41
+      }
+    },
+    "strict": true
+  },
+  {
+    "string": "  at https://foo.com/a file with eval .js:1:41",
+    "object": {
+      "call": null,
+      "site": {
+        "type": "uri",
+        "scheme": "https",
+        "path": "foo.com/a%20file%20with%20eval%20.js",
         "line": 1,
         "column": 41
       }

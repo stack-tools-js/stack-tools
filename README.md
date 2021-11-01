@@ -92,7 +92,8 @@ type Site =
   }
 | {
     type: 'uri';
-    uri: string;
+    scheme: string;
+    path: string;
     column: number;
     line: number;
   }
