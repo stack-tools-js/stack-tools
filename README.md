@@ -57,12 +57,10 @@ try {
 }
 ```
 
-v8 defines the following methods:
+v8 defines all the methods from the base API with wider types so that parsed outputs are always usable as inputs (e.g. as `printError(parseError(error)`). It defines the following additional methods:
 
 - `parseError(errror)` returns a parsed error
 - `parseErrors(errors)` returns an array of parsed errors
-- `printError(parsedError)` returns as string with the printed error
-- `printErrors(parsedErrors)` returns a string with the printed errors
 - `isInternalFrame(frame)` returns `true` if frame is internal.
 - `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
 - `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.

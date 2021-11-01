@@ -4,11 +4,7 @@ const isError = require('iserror');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
 const { parseFrame, printFrame, isInternalFrame } = require('./frame.js');
-const {
-  printFrames: basePrintFrames,
-  printError: basePrintError,
-  printErrorHeader: basePrintErrorHeader,
-} = require('../');
+const base = require('../error');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
@@ -59,7 +55,7 @@ function __printErrorHeader(error) {
 
 function printErrorHeader(error) {
   if (isError(error)) {
-    return basePrintErrorHeader(error);
+    return base.printErrorHeader(error);
   } else {
     return __printErrorHeader(error);
   }
@@ -72,7 +68,7 @@ function __printFrames(error) {
 
 function printFrames(error) {
   if (isError(error)) {
-    return basePrintFrames(error);
+    return base.printFrames(error);
   } else {
     return __printFrames(error);
   }
@@ -88,4 +84,11 @@ function cleanError(error, predicate = isInternalFrame) {
   return error;
 }
 
-module.exports = { parseError, printError, printErrorHeader, printFrames, cleanError };
+module.exports = {
+  ...base,
+  parseError,
+  printError,
+  printErrorHeader,
+  printFrames,
+  cleanError,
+};
