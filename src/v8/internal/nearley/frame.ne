@@ -1,6 +1,6 @@
 @{%
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall, buildFileSite } = require('../frame-shared.js');
 %}
 
 @lexer lexer
@@ -52,7 +52,7 @@ Site ->
   {% () => ({ type: "native" }) %}
 
 Path ->
-  Text {% (d) => ({ type: "file", file: d[0] }) %}
+  Text {% (d) => buildFileSite(d[0]) %}
   | "<" "anonymous" ">" {% () => ({ type: "anonymous" }) %}
 
 # [as methodName]

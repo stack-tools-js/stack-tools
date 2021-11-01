@@ -4,7 +4,7 @@
 function id(x) { return x[0]; }
 
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall, buildFileSite } = require('../frame-shared.js');
 var grammar = {
     Lexer: lexer,
     ParserRules: [
@@ -34,12 +34,13 @@ var grammar = {
     {"name": "AsMethod", "symbols": [{"literal":"["}, {"literal":"as"}, "__", "FunctionName", {"literal":"]"}], "postprocess": (d) => d[3]},
     {"name": "Path$ebnf$1", "symbols": []},
     {"name": "Path$ebnf$1", "symbols": ["Path$ebnf$1", "SpacePathFragment"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "Path", "symbols": ["PathFragment", "Path$ebnf$1"], "postprocess": (d) => ({ type: "file", file: d[0] + stringFrom(d[1])})},
+    {"name": "Path", "symbols": ["PathFragment", "Path$ebnf$1"], "postprocess": (d) => buildFileSite(d[0] + stringFrom(d[1]))},
     {"name": "Path", "symbols": [{"literal":"<"}, {"literal":"anonymous"}, {"literal":">"}], "postprocess": () => ({ type: "anonymous" })},
     {"name": "SpacePathFragment$ebnf$1", "symbols": ["SP"], "postprocess": id},
     {"name": "SpacePathFragment$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "SpacePathFragment", "symbols": ["SpacePathFragment$ebnf$1", "PathFragment"], "postprocess": (d) => (d[0] || '') + d[1]},
     {"name": "PathFragment$subexpression$1", "symbols": [(lexer.has("Number") ? {type: "Number"} : Number)]},
+    {"name": "PathFragment$subexpression$1", "symbols": [(lexer.has("CN") ? {type: "CN"} : CN)]},
     {"name": "PathFragment$subexpression$1", "symbols": [(lexer.has("Fragment") ? {type: "Fragment"} : Fragment)]},
     {"name": "PathFragment", "symbols": ["PathFragment$subexpression$1"], "postprocess": (d) => d[0][0].text},
     {"name": "FunctionName$ebnf$1", "symbols": []},

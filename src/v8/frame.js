@@ -51,7 +51,12 @@ function parseFrame(str) {
       if (call && call.constructor) score += 16;
       if (call && call.method !== call.function) score += 8;
       if (call && call.function) score += 4;
-      if (site && isBalanced(site.file)) score += 2;
+      if (
+        site &&
+        (site.type === 'path' || site.type === 'uri') &&
+        isBalanced(site.type === 'path' ? site.path : site.uri)
+      )
+        score += 2;
 
       if (score > bestScore) {
         bestScore = score;
@@ -83,8 +88,8 @@ function printSite(site) {
     case 'native':
       str += 'native';
       break;
-    case 'file':
-      str += site.file;
+    case 'path':
+      str += site.path;
       break;
     case 'uri':
       str += site.uri;
@@ -96,7 +101,7 @@ function printSite(site) {
 
   switch (site.type) {
     case 'anonymous':
-    case 'file':
+    case 'path':
     case 'uri':
       if (site.line) str += `:${site.line}`;
       if (site.column) str += `:${site.column}`;

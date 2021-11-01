@@ -23,7 +23,13 @@ export type Site =
     }
   | {
       type: 'file';
-      file: string;
+      path: string;
+      column: number;
+      line: number;
+    }
+  | {
+      type: 'uri';
+      uri: string;
       column: number;
       line: number;
     }

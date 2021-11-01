@@ -9,8 +9,8 @@
         "method": "Object.[foo]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -27,8 +27,26 @@
         "method": "Object.<anonymous>"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
+        "line": 419,
+        "column": 60
+      }
+    },
+    "strict": true
+  },
+  {
+    "string": "  at Object.<anonymous> (file://__dirname/generate-parse-fixture.js:419:60)",
+    "object": {
+      "call": {
+        "constructor": false,
+        "async": false,
+        "function": "Object.<anonymous>",
+        "method": "Object.<anonymous>"
+      },
+      "site": {
+        "type": "uri",
+        "uri": "file://__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -45,8 +63,8 @@
         "method": "Module._compile"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 571,
         "column": 32
       }
@@ -63,8 +81,8 @@
         "method": "Object.Module._extensions..js"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 580,
         "column": 10
       }
@@ -81,8 +99,8 @@
         "method": "Module.load"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 488,
         "column": 32
       }
@@ -99,8 +117,8 @@
         "method": "tryModuleLoad"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 447,
         "column": 12
       }
@@ -117,8 +135,8 @@
         "method": "Function.Module._load"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 439,
         "column": 3
       }
@@ -135,8 +153,8 @@
         "method": "Module.runMain"
       },
       "site": {
-        "type": "file",
-        "file": "module.js",
+        "type": "path",
+        "path": "module.js",
         "line": 605,
         "column": 10
       }
@@ -153,8 +171,8 @@
         "method": "run"
       },
       "site": {
-        "type": "file",
-        "file": "bootstrap_node.js",
+        "type": "path",
+        "path": "bootstrap_node.js",
         "line": 418,
         "column": 7
       }
@@ -171,8 +189,8 @@
         "method": "startup"
       },
       "site": {
-        "type": "file",
-        "file": "bootstrap_node.js",
+        "type": "path",
+        "path": "bootstrap_node.js",
         "line": 139,
         "column": 9
       }
@@ -189,8 +207,8 @@
         "method": "Object.asdf ][)( \u0000\u0001\u0002\u0003\u001b[44;37m foo"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -207,8 +225,8 @@
         "method": "Object.asdf (__dirname/generate-parse-fixture.js:419:60)"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -225,8 +243,8 @@
         "method": "Object.a (s) d [f]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -243,8 +261,8 @@
         "method": "Object.eval"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -273,8 +291,8 @@
           "method": "<anonymous>"
         },
         "site": {
-          "type": "file",
-          "file": "__dirname/generate-parse-fixture.js",
+          "type": "path",
+          "path": "__dirname/generate-parse-fixture.js",
           "line": 419,
           "column": 60
         }
@@ -304,8 +322,8 @@
           "method": "evalFunction"
         },
         "site": {
-          "type": "file",
-          "file": "a file with eval .js",
+          "type": "path",
+          "path": "a file with eval .js",
           "line": 1,
           "column": 23
         }
@@ -323,8 +341,8 @@
         "method": "evalFunction"
       },
       "site": {
-        "type": "file",
-        "file": "a file with eval .js",
+        "type": "path",
+        "path": "a file with eval .js",
         "line": 1,
         "column": 23
       }
@@ -336,8 +354,21 @@
     "object": {
       "call": null,
       "site": {
-        "type": "file",
-        "file": "a file with eval .js",
+        "type": "path",
+        "path": "a file with eval .js",
+        "line": 1,
+        "column": 41
+      }
+    },
+    "strict": true
+  },
+  {
+    "string": "  at file://a file with eval .js:1:41",
+    "object": {
+      "call": null,
+      "site": {
+        "type": "uri",
+        "uri": "file://a file with eval .js",
         "line": 1,
         "column": 41
       }
@@ -366,8 +397,8 @@
           "method": "<anonymous>"
         },
         "site": {
-          "type": "file",
-          "file": "a file with eval .js",
+          "type": "path",
+          "path": "a file with eval .js",
           "line": 1,
           "column": 1
         }
@@ -385,8 +416,8 @@
         "method": "ContextifyScript.Script.runInContext"
       },
       "site": {
-        "type": "file",
-        "file": "vm.js",
+        "type": "path",
+        "path": "vm.js",
         "line": 32,
         "column": 29
       }
@@ -403,8 +434,8 @@
         "method": "ContextifyScript.Script.runInNewContext"
       },
       "site": {
-        "type": "file",
-        "file": "vm.js",
+        "type": "path",
+        "path": "vm.js",
         "line": 38,
         "column": 15
       }
@@ -421,8 +452,8 @@
         "method": "Object.exports.runInNewContext"
       },
       "site": {
-        "type": "file",
-        "file": "vm.js",
+        "type": "path",
+        "path": "vm.js",
         "line": 60,
         "column": 17
       }
@@ -439,8 +470,8 @@
         "method": "Object.function ctor (file.js:1:2)     <anonymous>"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -464,8 +495,8 @@
           "method": "<anonymous>"
         },
         "site": {
-          "type": "file",
-          "file": "__dirname/generate-parse-fixture.js",
+          "type": "path",
+          "path": "__dirname/generate-parse-fixture.js",
           "line": 419,
           "column": 60
         }
@@ -488,8 +519,8 @@
         "method": "Object.[Symbol.iterator]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -506,8 +537,8 @@
         "method": "Classy.[Symbol.iterator]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -524,8 +555,8 @@
         "method": "[some (weird) [<symbolism>]]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -542,8 +573,8 @@
         "method": "foo"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -560,8 +591,8 @@
         "method": "foo"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -578,8 +609,8 @@
         "method": "Object.a (w) [<s>]"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -591,8 +622,8 @@
     "object": {
       "call": null,
       "site": {
-        "type": "file",
-        "file": "evalmachine.<anonymous>",
+        "type": "path",
+        "path": "evalmachine.<anonymous>",
         "line": 1,
         "column": 17
       }
@@ -610,8 +641,8 @@
         "method": "x"
       },
       "site": {
-        "type": "file",
-        "file": "f[i](l<e>:.js:1:2)",
+        "type": "path",
+        "path": "f[i](l<e>:.js:1:2)",
         "line": 1,
         "column": 33
       }
@@ -624,8 +655,8 @@
     "object": {
       "call": null,
       "site": {
-        "type": "file",
-        "file": "f[i](l<e>:.js:1:2)",
+        "type": "path",
+        "path": "f[i](l<e>:.js:1:2)",
         "line": 2,
         "column": 1
       }
@@ -642,8 +673,8 @@
         "method": "Foo"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }
@@ -660,8 +691,8 @@
         "method": "arr.map.n"
       },
       "site": {
-        "type": "file",
-        "file": "__dirname/generate-parse-fixture.js",
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
         "line": 419,
         "column": 60
       }

@@ -1,6 +1,6 @@
 @{%
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall, buildFileSite } = require('../frame-shared.js');
 %}
 
 @lexer lexer
@@ -54,13 +54,13 @@ Site ->
 AsMethod -> "[" "as" __ FunctionName "]" {% (d) => d[3] %}
 
 Path ->
-  PathFragment SpacePathFragment:* {% (d) => ({ type: "file", file: d[0] + stringFrom(d[1])}) %}
+  PathFragment SpacePathFragment:* {% (d) => buildFileSite(d[0] + stringFrom(d[1])) %}
   | "<" "anonymous" ">" {% () => ({ type: "anonymous" }) %}
 
 # Ensure that path never begins or ends with spaces.
 SpacePathFragment -> SP:? PathFragment {% (d) => (d[0] || '') + d[1] %}
 
-PathFragment -> (%Number | %Fragment) {% (d) => d[0][0].text %}
+PathFragment -> (%Number | %CN | %Fragment) {% (d) => d[0][0].text %}
 
 # This is the main difference in the strict parser
 # We do not allow text to contain characters that would be ambiguous

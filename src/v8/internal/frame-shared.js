@@ -1,5 +1,7 @@
 const moo = require('moo');
 
+const URIexp = /^\w+:\//;
+
 export const lexer = moo.compile({
   SP: /[ \t]+/,
   CN: ':',
@@ -35,4 +37,8 @@ export const buildCall = (kw, fn, method = fn) => {
     function: fn,
     method,
   };
+};
+
+export const buildFileSite = (path) => {
+  return URIexp.test(path) ? { type: 'uri', uri: path } : { type: 'path', path };
 };

@@ -85,8 +85,14 @@ type Site =
     type: 'native';
   }
 | {
-    type: 'file';
-    file: string;
+    type: 'path';
+    path: string;
+    column: number;
+    line: number;
+  }
+| {
+    type: 'uri';
+    uri: string;
     column: number;
     line: number;
   }

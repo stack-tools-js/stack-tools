@@ -4,7 +4,7 @@
 function id(x) { return x[0]; }
 
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall, buildFileSite } = require('../frame-shared.js');
 var grammar = {
     Lexer: lexer,
     ParserRules: [
@@ -31,7 +31,7 @@ var grammar = {
     {"name": "Site", "symbols": ["Path", "_", {"literal":":"}, "_", "Number", "_", {"literal":":"}, "_", "Number"], "postprocess": (d) => ({ ...d[0], line: d[4], column: d[8] })},
     {"name": "Site", "symbols": [{"literal":"<"}, {"literal":"anonymous"}, {"literal":">"}], "postprocess": () => ({ type: "anonymous" })},
     {"name": "Site", "symbols": [{"literal":"native"}], "postprocess": () => ({ type: "native" })},
-    {"name": "Path", "symbols": ["Text"], "postprocess": (d) => ({ type: "file", file: d[0] })},
+    {"name": "Path", "symbols": ["Text"], "postprocess": (d) => buildFileSite(d[0])},
     {"name": "Path", "symbols": [{"literal":"<"}, {"literal":"anonymous"}, {"literal":">"}], "postprocess": () => ({ type: "anonymous" })},
     {"name": "AsMethod", "symbols": [{"literal":"["}, {"literal":"as"}, "__", "Text", {"literal":"]"}], "postprocess": (d) => d[3]},
     {"name": "Text$ebnf$1", "symbols": []},

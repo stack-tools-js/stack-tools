@@ -25,7 +25,7 @@ function isInternalFrame(frame) {
   const { site } = frame;
   return (
     v8.isInternalFrame(frame) ||
-    (site.type === 'file' && natives.some((regex) => regex.test(site.file)))
+    (site.type === 'file' && natives.some((regex) => regex.test(site.path)))
   );
 }
 
