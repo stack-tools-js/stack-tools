@@ -4,7 +4,7 @@
 function id(x) { return x[0]; }
 
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('./frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
 var grammar = {
     Lexer: lexer,
     ParserRules: [

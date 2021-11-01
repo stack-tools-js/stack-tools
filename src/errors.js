@@ -1,3 +1,5 @@
+const { printErrorHeader, printError } = require('./error');
+
 function printErrorHeaders(error) {
   let str = '';
   let first = true;

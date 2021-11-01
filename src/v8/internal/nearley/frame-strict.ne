@@ -1,6 +1,6 @@
 @{%
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall } = require('./frame-shared.js');
+const { lexer, buildFrame, buildCallSite, buildCall } = require('../frame-shared.js');
 %}
 
 @lexer lexer

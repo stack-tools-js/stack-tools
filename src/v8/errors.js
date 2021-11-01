@@ -68,7 +68,6 @@ function printErrors(errors, options) {
 
 function __printErrorHeaders(errors) {
   let str = '';
-  let first = true;
   for (let i = 0; i < errors.length; i++) {
     const error = errors[i];
     if (i > 0) str += '\nCaused by: ';

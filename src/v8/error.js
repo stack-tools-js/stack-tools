@@ -3,6 +3,7 @@ const isError = require('iserror');
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const { buildCallSite } = require('./internal/nearley/frame-shared');
 const { parseFrame, printFrame, isInternalFrame } = require('./frame.js');
 const base = require('../error');
 
