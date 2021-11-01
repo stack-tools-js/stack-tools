@@ -1,4 +1,7 @@
 export type Options = {
+  // If strict, throw an error when error.stack contains causes
+  // In strict mode causes are expected to be expressed using error.cause
+  // I expect that most users will want to leave strict mode disabled
   strict?: boolean;
 };
 

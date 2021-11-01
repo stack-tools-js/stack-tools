@@ -67,7 +67,10 @@ v8 defines all the methods from the base API with wider types so that parsed out
 
 ### node
 
-The node environment extends the v8 environment with a definition of `isInternalFrame` that includes node internals.
+The node environment extends the v8 environment with some changes:
+
+- Its definition of `isInternalFrame` includes node internal modules (e.g. `fs`).
+- It accepts a function as the `omitFrame` argument to `captureFrames`. Frames including and above that function in the stack will be omitted.
 
 ```js
 import getPackageName from 'get-package-name';
