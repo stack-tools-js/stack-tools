@@ -40,5 +40,5 @@ export const buildCall = (kw, fn, method = fn) => {
 };
 
 export const buildFileSite = (path) => {
-  return URIexp.test(path) ? { type: 'uri', uri: path } : { type: 'path', path };
+  return URIexp.test(path) ? { type: 'uri', uri: encodeURI(path) } : { type: 'path', path };
 };

@@ -368,7 +368,7 @@
       "call": null,
       "site": {
         "type": "uri",
-        "uri": "file://a file with eval .js",
+        "uri": "file://a%20file%20with%20eval%20.js",
         "line": 1,
         "column": 41
       }

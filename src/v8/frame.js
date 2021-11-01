@@ -92,7 +92,7 @@ function printSite(site) {
       str += site.path;
       break;
     case 'uri':
-      str += site.uri;
+      str += decodeURI(site.uri);
       break;
     case 'index':
       str += `index ${site.index}`;
