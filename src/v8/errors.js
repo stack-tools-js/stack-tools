@@ -4,7 +4,7 @@ const isError = require('iserror');
 const base = require('../errors');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
-const { parseError, printError, printErrorHeader, cleanError } = require('./error.js');
+const { parseError, printError, cleanError } = require('./error.js');
 const { parseFrame, isInternalFrame } = require('./frame.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
@@ -17,9 +17,9 @@ function __parseError(error, options = {}) {
     : parseUnambiguous(ErrorsGrammar, error);
 
   return parsedErrors.map((error) => {
-    const stack = error.stack.map((frame) => parseFrame(frame));
+    const frames = error.frames.map((frame) => parseFrame(frame));
 
-    return { ...error, stack };
+    return { ...error, frames };
   });
 }
 
@@ -45,7 +45,7 @@ function __printErrors(errors) {
     if (i > 0) {
       str += '\n';
       str += error.prefix ? error.prefix : 'Caused by:';
-      if (error.message) str += ' ';
+      if (error.header) str += ' ';
     }
 
     str += printError(error);
@@ -66,35 +66,16 @@ function printErrors(errors, options) {
   }
 }
 
-function __printErrorHeaders(errors) {
-  let str = '';
-  for (let i = 0; i < errors.length; i++) {
-    const error = errors[i];
-    if (i > 0) str += '\nCaused by: ';
-
-    str += printErrorHeader(error);
-  }
-  return str;
-}
-
-function printErrorHeaders(error) {
-  if (isError(error)) {
-    return base.printErrorHeaders(error);
-  } else {
-    return __printErrorHeaders(error);
-  }
-}
-
 function cleanErrors(errors, predicate = isInternalFrame) {
   for (let i = 0; i < errors.length; i++) {
     cleanError(errors[i], predicate);
   }
+  return errors;
 }
 
 module.exports = {
   ...base,
   parseErrors,
   printErrors,
-  printErrorHeaders,
   cleanErrors,
 };

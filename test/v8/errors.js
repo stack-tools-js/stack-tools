@@ -33,15 +33,15 @@ test('can reprint a string error', (t) => {
   const parsed = parseErrors(stack);
 
   t.like(parsed[0], {
-    message: 'ReferenceError: a is not defined',
+    header: 'ReferenceError: a is not defined',
   });
   t.like(parsed[1], {
     prefix: 'From previous event:',
-    message: '',
+    header: '',
   });
   t.like(parsed[2], {
     prefix: 'From previous event:',
-    message: 'Bogus message',
+    header: 'Bogus message',
   });
 
   t.is(printErrors(parsed), stack);

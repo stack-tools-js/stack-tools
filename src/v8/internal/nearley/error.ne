@@ -22,24 +22,24 @@ ErrorStack ->
     const first = d[0];
     const rest = d[1] ? d[1].map((d => {
       const error = d[1];
-      let { message, stack } = error;
-      const colonIdx = message.indexOf(':');
+      let { header, frames } = error;
+      const colonIdx = header.indexOf(':');
       if (colonIdx >= 0) {
-        const prefix = message.slice(0, colonIdx + 1);
-        message = message.slice(colonIdx + 1).trimLeft();
-        return { message, stack, prefix };
+        const prefix = header.slice(0, colonIdx + 1);
+        header = header.slice(colonIdx + 1).trimLeft();
+        return { header, frames, prefix };
       }
       return error;
     })) : [];
     return [first, ...rest];
    } %}
   | Message
-  {% (d) => [({ message: d[0] })] %}
+  {% (d) => [({ header: d[0] })] %}
 
-# FubarError: message
+# FubarError: header
 #     at frame
 Error -> Message NL:+ Stack
-{% (d) => ({ message: d[0], stack: d[2] }) %}
+{% (d) => ({ header: d[0], frames: d[2] }) %}
 
 # FubarError: There was extreme and terrible errorness
 # Maybe you should try not writing code that has these problems

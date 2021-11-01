@@ -24,9 +24,20 @@ try {
 
 ## API
 
-The general API provides these methods:
+Utilities that work with stacks from any environment are in the `stack-tools` module, otherwise known as the base module. Parameters called `error` (other than `parseError(error)`) accept either an instance of `Error` (or one of its subtypes) or a `ParsedError` as returned by `parseError(error)`, which is defined as:
+
+```ts
+type ParsedError {
+  header: string; // equivalent to printErrorHeader(error)
+  frames: Array<string>;
+}
+```
+
+The base API provides the following methods:
 
 - `captureFrames(omitFrames = 1)` returns the stack trace at the caller's location, omitting the last `omitFrames` frames. The default is to omit one frame, which would be the frame for `captureStack` itself.
+- `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
+- `parseErrors(errors)` returns an array of parsed errors
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``
 - `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}` ``
@@ -38,6 +49,60 @@ The general API provides these methods:
 The platform-specific API allows parsing and reprinting of errors. **Parsing errors is a best-effort process, and you must never use the results of parsing an error to define business logic. The only supported usage of output from parseError is as input to printError.** These APIs exist to allow you to reformat errors which may contain unhelpful cruft.
 
 ### v8
+
+Utilities for working with v8 stacks (used by node, Chrome, and Chromium based browsers such as Opera and IE Edge) are in the `stack-tools/v8` module. The type of `ParsedError` differs slightly from the base API. For `v8` it is:
+
+```ts
+type ParsedError {
+  header: string;
+  frames: Array<Frame>;
+  prefix: string; // 'Caused by:' or other similar text ending in ':'
+}
+
+type Frame = {
+  call: Call | null;
+  site: Site;
+  eval: {
+    call: Call | null;
+    site: Site;
+  };
+};
+
+type Call = {
+  async: boolean;
+  constructor: boolean;
+  function: string;
+  method: string;
+};
+
+type Site =
+| {
+    type: 'anonymous';
+    column?: number;
+    line?: number;
+  }
+| {
+    type: 'native';
+  }
+| {
+    type: 'file';
+    file: string;
+    column: number;
+    line: number;
+  }
+| {
+    type: 'index';
+    index: number;
+  };
+```
+
+v8 defines all the methods from the base API with wider types so that parsed outputs are always usable as inputs (e.g. as `printError(parseError(error)`). It defines the following additional methods:
+
+- `isInternalFrame(frame)` returns `true` if frame is internal.
+- `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
+- `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.
+
+A common usage might look like this:
 
 ```js
 import {
@@ -57,20 +122,14 @@ try {
 }
 ```
 
-v8 defines all the methods from the base API with wider types so that parsed outputs are always usable as inputs (e.g. as `printError(parseError(error)`). It defines the following additional methods:
-
-- `parseError(errror)` returns a parsed error
-- `parseErrors(errors)` returns an array of parsed errors
-- `isInternalFrame(frame)` returns `true` if frame is internal.
-- `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
-- `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.
-
 ### node
 
 The node environment extends the v8 environment with some changes:
 
 - Its definition of `isInternalFrame` includes node internal modules (e.g. `fs`).
 - It accepts a function as the `omitFrame` argument to `captureFrames`. Frames including and above that function in the stack will be omitted.
+
+Here is a common use case:
 
 ```js
 import getPackageName from 'get-package-name';

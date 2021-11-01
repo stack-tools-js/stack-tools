@@ -26,21 +26,21 @@ var grammar = {
          const first = d[0];
          const rest = d[1] ? d[1].map((d => {
            const error = d[1];
-           let { message, stack } = error;
-           const colonIdx = message.indexOf(':');
+           let { header, frames } = error;
+           const colonIdx = header.indexOf(':');
            if (colonIdx >= 0) {
-             const prefix = message.slice(0, colonIdx + 1);
-             message = message.slice(colonIdx + 1).trimLeft();
-             return { message, stack, prefix };
+             const prefix = header.slice(0, colonIdx + 1);
+             header = header.slice(colonIdx + 1).trimLeft();
+             return { header, frames, prefix };
            }
            return error;
          })) : [];
          return [first, ...rest];
         } },
-    {"name": "ErrorStack", "symbols": ["Message"], "postprocess": (d) => [({ message: d[0] })]},
+    {"name": "ErrorStack", "symbols": ["Message"], "postprocess": (d) => [({ header: d[0] })]},
     {"name": "Error$ebnf$1", "symbols": ["NL"]},
     {"name": "Error$ebnf$1", "symbols": ["Error$ebnf$1", "NL"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "Error", "symbols": ["Message", "Error$ebnf$1", "Stack"], "postprocess": (d) => ({ message: d[0], stack: d[2] })},
+    {"name": "Error", "symbols": ["Message", "Error$ebnf$1", "Stack"], "postprocess": (d) => ({ header: d[0], frames: d[2] })},
     {"name": "Message$ebnf$1", "symbols": []},
     {"name": "Message$ebnf$1$subexpression$1", "symbols": ["NL", "Text"]},
     {"name": "Message$ebnf$1", "symbols": ["Message$ebnf$1", "Message$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},

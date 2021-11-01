@@ -26,7 +26,7 @@
     "verify": "run-s build:js test"
   },
   "lint-staged": {
-    "*.{js}": [
+    "*.js": [
       "eslint --quiet"
     ],
     "*.{js,md,json}": [

@@ -43,12 +43,12 @@ export type Frame = CallSite & {
 
 export type ParsedError = {
   prefix?: string;
-  message: string;
-  stack: Array<Frame>;
+  header: string;
+  frames: Array<Frame>;
 };
 
 export type PrintableError = {
   prefix?: string;
-  message: string;
-  stack: string | Array<Frame | string>;
+  header: string;
+  frames: string | Array<Frame | string>;
 };

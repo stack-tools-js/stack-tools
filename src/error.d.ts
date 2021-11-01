@@ -1,5 +1,9 @@
-export function printErrorHeader(error: Error): string;
+import { ParsedError } from './types';
 
-export function printFrames(error: Error): string;
+export function parseError(error: Error): ParsedError;
 
-export function printError(error: Error): string;
+export function printErrorHeader(error: Error | ParsedError): string;
+
+export function printFrames(error: Error | ParsedError): string;
+
+export function printError(error: Error | ParsedError): string;

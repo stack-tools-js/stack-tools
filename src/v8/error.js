@@ -16,9 +16,9 @@ function __parseError(error, options = {}) {
     ? parseUnambiguous(ErrorGrammar, error)
     : parseUnambiguous(ErrorsGrammar, error)[0];
 
-  const stack = parsedError.stack.map((frame) => parseFrame(frame));
+  const frames = parsedError.frames.map((frame) => parseFrame(frame));
 
-  return { ...error, stack };
+  return { ...error, frames };
 }
 
 function parseError(error, options) {
@@ -36,9 +36,9 @@ function parseError(error, options) {
 }
 
 function __printError(error) {
-  const header = __printErrorHeader(error);
-  const stack = __printFrames(error);
-  return stack ? `${header}\n${stack}` : stack;
+  const header = base.printErrorHeader(error);
+  const frames = __printFrames(error);
+  return frames ? `${header}\n${frames}` : frames;
 }
 
 function printError(error, options) {
@@ -50,21 +50,9 @@ function printError(error, options) {
   }
 }
 
-function __printErrorHeader(error) {
-  return error.message;
-}
-
-function printErrorHeader(error) {
-  if (isError(error)) {
-    return base.printErrorHeader(error);
-  } else {
-    return __printErrorHeader(error);
-  }
-}
-
 function __printFrames(error) {
-  const { stack } = error;
-  return typeof stack === 'string' ? stack : stack.map((frame) => printFrame(frame)).join('\n');
+  const { frames } = error;
+  return typeof frames === 'string' ? frames : frames.map((frame) => printFrame(frame)).join('\n');
 }
 
 function printFrames(error) {
@@ -89,7 +77,6 @@ module.exports = {
   ...base,
   parseError,
   printError,
-  printErrorHeader,
   printFrames,
   cleanError,
 };
