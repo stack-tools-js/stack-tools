@@ -52,7 +52,7 @@ The platform-specific API allows parsing and reprinting of errors. **Parsing err
 Utilities for working with v8 stacks (used by node, Chrome, and Chromium based browsers such as Opera and IE Edge) are in the `stack-tools/v8` module. The type of `ParsedError` differs slightly from the base API. For `v8` it is:
 
 ```ts
-type ParsedError {
+type ParsedError = {
   header: string;
   frames: Array<Frame>;
   prefix: string; // 'Caused by:' or other similar text ending in ':'
