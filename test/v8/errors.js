@@ -36,11 +36,11 @@ test('can reprint a string error', (t) => {
     header: 'ReferenceError: a is not defined',
   });
   t.like(parsed[1], {
-    prefix: 'From previous event:',
+    prefix: 'From previous event',
     header: '',
   });
   t.like(parsed[2], {
-    prefix: 'From previous event:',
+    prefix: 'From previous event',
     header: 'Bogus message',
   });
 

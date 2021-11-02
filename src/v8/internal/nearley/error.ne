@@ -25,7 +25,7 @@ ErrorStack ->
       let { header, frames } = error;
       const colonIdx = header.indexOf(':');
       if (colonIdx >= 0) {
-        const prefix = header.slice(0, colonIdx + 1);
+        const prefix = header.slice(0, colonIdx);
         header = header.slice(colonIdx + 1).trimLeft();
         return { header, frames, prefix };
       }
