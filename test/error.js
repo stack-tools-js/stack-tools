@@ -23,7 +23,8 @@ testError.stack = testErrorStack;
 
 test('can parse an error', (t) => {
   t.deepEqual(parseError(testError), {
-    header: testErrorHeader,
+    name: testErrorName,
+    message: testErrorMessage,
     frames: testErrorFrames,
   });
 });

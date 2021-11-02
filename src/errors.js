@@ -1,7 +1,6 @@
 const isError = require('iserror');
-const { printErrorHeader } = require('./error');
-const { parseError } = require('./error');
-const { printError } = require('./error');
+
+const { parseError, printError, printErrorHeader } = require('./error.js');
 
 function parseErrors(error) {
   if (isError(error)) {

@@ -20,17 +20,7 @@ ErrorStack ->
   Error (NL Error):*
   {% (d) => {
     const first = d[0];
-    const rest = d[1] ? d[1].map((d => {
-      const error = d[1];
-      let { header, frames } = error;
-      const colonIdx = header.indexOf(':');
-      if (colonIdx >= 0) {
-        const prefix = header.slice(0, colonIdx);
-        header = header.slice(colonIdx + 1).trimLeft();
-        return { header, frames, prefix };
-      }
-      return error;
-    })) : [];
+    const rest = d[1].map((d => d[1]));
     return [first, ...rest];
    } %}
   | Message

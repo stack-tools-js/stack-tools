@@ -10,7 +10,6 @@ function parseError(error) {
   if (isError(error)) {
     const { name, displayName, message, stack } = error;
 
-    const header = printErrorHeader(error);
     const names = [name, 'Error'];
     // Some older browsers print displayName instead of name
     if (displayName) names.push(displayName);
@@ -22,35 +21,27 @@ function parseError(error) {
     const headerlessStack = headerMatch ? stack.slice(headerMatch[0].length) : stack;
     const frames = headerlessStack.split('\n');
 
-    return { header, frames };
+    return { name, message, frames };
   } else {
     throw new Error('error argument to parseError must be an Error');
   }
 }
 
-function __printErrorHeader(error) {
-  return error.header;
-}
-
-function printNameAndMessage(name, message) {
-  let header = '';
-  header += name || 'Error';
-  if (message) header += `: ${message}`;
-  return header;
-}
-
 function printErrorHeader(error) {
-  if (isError(error)) {
-    const { name, message } = error;
-
-    return printNameAndMessage(name, message);
-  } else {
-    return __printErrorHeader(error);
-  }
+  const { name, message } = error;
+  // prettier-ignore
+  return (
+    name && message
+      ? `${name}: ${message}`
+      : message || name
+        ? message || `${name}:`
+        : 'Error:'
+  );
 }
 
 function __printError(error) {
-  const { header, frames } = error;
+  const { frames } = error;
+  const header = printErrorHeader(error);
 
   return frames.length ? `${header}\n${error.frames.join('\n')}` : header;
 }

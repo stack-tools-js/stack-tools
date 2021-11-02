@@ -4,22 +4,21 @@ const isError = require('iserror');
 const base = require('../errors');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const { buildError, buildChainedError } = require('./internal/error');
 const { parseError, printError, cleanError } = require('./error.js');
-const { parseFrame, isInternalFrame } = require('./frame.js');
+const { isInternalFrame } = require('./frame.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
 function __parseError(error, options = {}) {
   const { strict = false } = options;
-  const parsedErrors = strict
+  const parserErrors = strict
     ? [parseUnambiguous(ErrorGrammar, error)]
     : parseUnambiguous(ErrorsGrammar, error);
 
-  return parsedErrors.map((error) => {
-    const frames = error.frames.map((frame) => parseFrame(frame));
-
-    return { ...error, frames };
+  return parserErrors.map((error, i) => {
+    return i === 0 ? buildError(error) : buildChainedError(error);
   });
 }
 
@@ -44,8 +43,9 @@ function __printErrors(errors) {
 
     if (i > 0) {
       str += '\n';
-      str += error.prefix ? error.prefix : 'Caused by:';
-      if (error.header) str += ' ';
+      const { prefix = 'Caused by' } = error;
+      str += `${prefix}:`;
+      if (error.message) str += ' ';
     }
 
     str += printError(error);
