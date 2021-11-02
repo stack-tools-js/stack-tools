@@ -1,3 +1,3 @@
 module.exports = {
-  files: ['test/*/', 'test/*/*'],
+  files: ['test/**/*', '**/fixtures/**/*'],
 };

@@ -37,7 +37,6 @@ The base API provides the following methods:
 
 - `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
 - `parseErrors(errors)` returns an array of parsed errors
-- `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``
 - `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}` ``
 - `printError(error)` returns `` `${printHeader(errror)}\n${error.stack}` ``
@@ -56,7 +55,7 @@ type ParsedError = {
   header: string;
   frames: Array<Frame>;
   prefix: string; // 'Caused by:' or other similar text ending in ':'
-}
+};
 
 type Frame = {
   call: Call | null;
@@ -75,31 +74,31 @@ type Call = {
 };
 
 type Site =
-| {
-    type: 'anonymous';
-    column?: number;
-    line?: number;
-  }
-| {
-    type: 'native';
-  }
-| {
-    type: 'path';
-    path: string;
-    column: number;
-    line: number;
-  }
-| {
-    type: 'uri';
-    scheme: string;
-    path: string;
-    column: number;
-    line: number;
-  }
-| {
-    type: 'index';
-    index: number;
-  };
+  | {
+      type: 'anonymous';
+      column?: number;
+      line?: number;
+    }
+  | {
+      type: 'native';
+    }
+  | {
+      type: 'path';
+      path: string;
+      column: number;
+      line: number;
+    }
+  | {
+      type: 'uri';
+      scheme: string;
+      path: string;
+      column: number;
+      line: number;
+    }
+  | {
+      type: 'index';
+      index: number;
+    };
 ```
 
 v8 defines all the methods from the base API with wider types so that parsed outputs are always usable as inputs (e.g. as `printError(parseError(error)`). It defines the following additional methods:

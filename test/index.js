@@ -1,12 +1,6 @@
 const test = require('ava');
 
-const {
-  printErrorHeader,
-  printErrorHeaders,
-  printError,
-  printErrors,
-  printFrames,
-} = require('../lib');
+const { printErrorHeader, printErrorHeaders, printError, printErrors } = require('../lib');
 
 const testCauseName = 'Error';
 const testCauseMessage = 'the system is down';
@@ -50,8 +44,4 @@ test('can print an error', (t) => {
 test('can print a chain of errors', (t) => {
   const expected = `${testErrorStack}\nCaused by: ${testCauseStack}`;
   t.is(printErrors(testError), expected);
-});
-
-test("can print an error's stack frames", (t) => {
-  t.is(printFrames(testError), testErrorFrames);
 });
