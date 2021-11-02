@@ -2,7 +2,7 @@ const moo = require('moo');
 
 const URIexp = /^(\w+):\/\//;
 
-export const lexer = moo.compile({
+const lexer = moo.compile({
   SP: /[ \t]+/,
   CN: ':',
   LB: '[', // Braces
@@ -15,7 +15,7 @@ export const lexer = moo.compile({
   Fragment: /[^()<>[\]: \d\t\n]+/,
 });
 
-export const buildFrame = (evalOrigin, site, eval_) => {
+const buildFrame = (evalOrigin, site, eval_) => {
   return {
     call: {
       constructor: false,
@@ -28,9 +28,9 @@ export const buildFrame = (evalOrigin, site, eval_) => {
   };
 };
 
-export const buildCallSite = (call, site) => ({ call, site });
+const buildCallSite = (call, site) => ({ call, site });
 
-export const buildCall = (kw, fn, method = fn) => {
+const buildCall = (kw, fn, method = fn) => {
   return {
     constructor: kw === 'new',
     async: kw === 'async',
@@ -39,7 +39,7 @@ export const buildCall = (kw, fn, method = fn) => {
   };
 };
 
-export const buildFileSite = (pathOrUri) => {
+const buildFileSite = (pathOrUri) => {
   const URImatch = URIexp.exec(pathOrUri);
   if (URImatch) {
     const uri = encodeURI(pathOrUri);
@@ -51,3 +51,5 @@ export const buildFileSite = (pathOrUri) => {
     return { type: 'path', path: pathOrUri };
   }
 };
+
+module.exports = { lexer, buildFrame, buildCallSite, buildCall, buildFileSite };
