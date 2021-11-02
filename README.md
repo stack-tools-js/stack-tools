@@ -35,7 +35,6 @@ type ParsedError {
 
 The base API provides the following methods:
 
-- `captureFrames(omitFrames = 1)` returns the stack trace at the caller's location, omitting the last `omitFrames` frames. The default is to omit one frame, which would be the frame for `captureStack` itself.
 - `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
 - `parseErrors(errors)` returns an array of parsed errors
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
@@ -131,10 +130,7 @@ try {
 
 ### node
 
-The node environment extends the v8 environment with some changes:
-
-- Its definition of `isInternalFrame` includes node internal modules (e.g. `fs`).
-- It accepts a function as the `omitFrame` argument to `captureFrames`. Frames including and above that function in the stack will be omitted.
+The node environment extends the v8 environment with a definition of `isInternalFrame` includes node internal modules (e.g. `fs`).
 
 Here is a common use case:
 

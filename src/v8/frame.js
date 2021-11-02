@@ -1,6 +1,5 @@
 const { Grammar } = require('nearley');
 
-const base = require('../frame');
 const { parseFrameStrict } = require('./internal/frame-strict.js');
 const { parse } = require('./internal/nearley/util.js');
 const CompiledFrameGrammar = require('./internal/nearley/frame.js');
@@ -147,4 +146,4 @@ function isInternalFrame(frame) {
   return frame.site.type === 'native';
 }
 
-module.exports = { ...base, parseFrame, printFrame, isInternalFrame };
+module.exports = { parseFrame, printFrame, isInternalFrame };
