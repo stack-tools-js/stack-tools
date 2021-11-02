@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const { parseError, printErrorHeader, printError } = require('../lib');
+const { parseError, printErrorHeader, printFrames, printError } = require('../lib');
 
 class TestError extends Error {
   get name() {
@@ -34,4 +34,8 @@ test('can print an error header', (t) => {
 
 test('can print an error', (t) => {
   t.is(printError(testError), testErrorStack);
+});
+
+test("can print an error's stack frames", (t) => {
+  t.is(printFrames(testError), testErrorFrames.join('\n'));
 });

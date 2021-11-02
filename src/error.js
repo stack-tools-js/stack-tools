@@ -49,14 +49,22 @@ function printErrorHeader(error) {
   }
 }
 
+function __printFrames(error) {
+  return error.frames.join('\n');
+}
+
+function printFrames(error) {
+  return __printFrames(isError(error) ? parseError(error) : error);
+}
+
 function __printError(error) {
   const { header, frames } = error;
 
-  return frames.length ? `${header}\n${error.frames.join('\n')}` : header;
+  return frames.length ? `${header}\n${__printFrames(error)}` : header;
 }
 
 function printError(error) {
   return __printError(isError(error) ? parseError(error) : error);
 }
 
-module.exports = { parseError, printErrorHeader, printError };
+module.exports = { parseError, printErrorHeader, printFrames, printError };

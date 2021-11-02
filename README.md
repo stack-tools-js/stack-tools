@@ -37,6 +37,7 @@ The base API provides the following methods:
 
 - `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
 - `parseErrors(errors)` returns an array of parsed errors
+- `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``
 - `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}` ``
 - `printError(error)` returns `` `${printHeader(errror)}\n${error.stack}` ``
