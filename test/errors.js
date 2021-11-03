@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const { parseErrors, printErrorHeaders, printErrors } = require('../lib');
+const { parseErrors, printErrorHeaders, printErrors } = require('../src');
 
 const testCauseName = 'Error';
 const testCauseMessage = 'the system is down';

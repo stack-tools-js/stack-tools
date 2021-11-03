@@ -1,7 +1,7 @@
 const test = require('ava');
 const { stripIndent } = require('common-tags');
 
-const { parseErrors, printErrors } = require('../../lib/v8');
+const { parseErrors, printErrors } = require('../../src/v8');
 
 const nativeFrame = { call: null, site: { type: 'native' } };
 

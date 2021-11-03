@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const { parseError, printErrorHeader, printFrames, printError } = require('../lib');
+const { parseError, printErrorHeader, printFrames, printError } = require('../src');
 
 class TestError extends Error {
   get name() {

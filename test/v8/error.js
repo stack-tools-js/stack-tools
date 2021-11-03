@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const { parseError, printError } = require('../../lib/v8');
+const { parseError, printError } = require('../../src/v8');
 
 const nativeFrame = { call: null, site: { type: 'native' } };
 

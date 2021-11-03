@@ -2,7 +2,7 @@
 
 const test = require('ava');
 const cases = require('./fixtures/frame.json');
-const { parseFrame, printFrame } = require('../../lib/v8');
+const { parseFrame, printFrame } = require('../../src/v8');
 
 const someOnly = cases.some(({ only }) => only);
 
