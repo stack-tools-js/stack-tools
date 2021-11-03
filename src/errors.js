@@ -1,7 +1,7 @@
 const isError = require('iserror');
-const { printErrorHeader } = require('./error');
-const { parseError } = require('./error');
-const { printError } = require('./error');
+
+const { printHeader } = require('./internal/header.js');
+const { parseError, printError } = require('./error');
 
 function parseErrors(error) {
   if (isError(error)) {
@@ -18,10 +18,9 @@ function parseErrors(error) {
 function __printErrorHeaders(errors) {
   let str = '';
   for (let i = 0; i < errors.length; i++) {
-    const error = errors[i];
     if (i > 0) str += '\nCaused by: ';
 
-    str += error.header;
+    str += printHeader(errors[i]);
   }
   return str;
 }
@@ -30,7 +29,7 @@ function printErrorHeaders(errors) {
   if (isError(errors)) {
     const chain = [];
     for (let cause = errors; cause; cause = cause.cause) {
-      chain.push({ header: printErrorHeader(cause) });
+      chain.push(cause);
     }
     return __printErrorHeaders(chain);
   } else {

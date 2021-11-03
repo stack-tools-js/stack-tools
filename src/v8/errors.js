@@ -1,9 +1,15 @@
 const { Grammar } = require('nearley');
 const isError = require('iserror');
 
-const base = require('../errors');
+const base = require('../errors.js');
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const {
+  parseHeader,
+  printHeader,
+  parseChainedHeader,
+  printChainedHeader,
+} = require('./internal/header.js');
 const { parseError, printFrames, cleanError } = require('./error.js');
 const { parseFrame, isInternalFrame } = require('./frame.js');
 
@@ -16,10 +22,12 @@ function __parseError(error, options = {}) {
     ? [parseUnambiguous(ErrorGrammar, error)]
     : parseUnambiguous(ErrorsGrammar, error);
 
-  return parsedErrors.map((error) => {
-    const frames = error.frames.map((frame) => parseFrame(frame));
+  return parsedErrors.map((error, i) => {
+    const { header, frames } = error;
+    const parsedHeader = i === 0 ? parseHeader(header) : parseChainedHeader(header);
+    const parsedFrames = frames.map((frame) => parseFrame(frame));
 
-    return { ...error, frames };
+    return { ...parsedHeader, frames: parsedFrames };
   });
 }
 
@@ -40,25 +48,12 @@ function parseErrors(errors, options = {}) {
 function __printErrors(errors) {
   let str = '';
   for (let i = 0; i < errors.length; i++) {
+    if (i > 0) str += '\n';
     const error = errors[i];
-    const { prefix, header } = error;
+    const { frames } = error;
+    const header = i === 0 ? printHeader(error) : printChainedHeader(error);
 
-    if (i > 0) {
-      str += '\n';
-      if (header && prefix) {
-        str += `${prefix}: ${header}`;
-      } else if (header || prefix) {
-        str += header || `${prefix}:`;
-      } else {
-        str += 'Caused by:';
-      }
-    } else {
-      str += header;
-    }
-
-    str += '\n';
-
-    str += printFrames(error);
+    str += frames.length ? `${header}\n${printFrames(error)}` : header;
   }
 
   return str;

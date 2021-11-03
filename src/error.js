@@ -1,5 +1,7 @@
 const isError = require('iserror');
 
+const { printHeader } = require('./internal/header.js');
+
 // Stolen from escape-string-regexp © sindresorhus
 // It was easier to copy the code than transpile to cjs inside node_modules
 function escapeRegex(string) {
@@ -10,7 +12,6 @@ function parseError(error) {
   if (isError(error)) {
     const { name, displayName, message, stack } = error;
 
-    const header = printErrorHeader(error);
     const names = [name, 'Error'];
     // Some older browsers print displayName instead of name
     if (displayName) names.push(displayName);
@@ -22,31 +23,14 @@ function parseError(error) {
     const headerlessStack = headerMatch ? stack.slice(headerMatch[0].length) : stack;
     const frames = headerlessStack.split('\n');
 
-    return { header, frames };
+    return { name, message, frames };
   } else {
     throw new Error('error argument to parseError must be an Error');
   }
 }
 
-function __printErrorHeader(error) {
-  return error.header;
-}
-
-function printNameAndMessage(name, message) {
-  let header = '';
-  header += name || 'Error';
-  if (message) header += `: ${message}`;
-  return header;
-}
-
 function printErrorHeader(error) {
-  if (isError(error)) {
-    const { name, message } = error;
-
-    return printNameAndMessage(name, message);
-  } else {
-    return __printErrorHeader(error);
-  }
+  return printHeader(error);
 }
 
 function __printFrames(error) {
@@ -58,9 +42,10 @@ function printFrames(error) {
 }
 
 function __printError(error) {
-  const { header, frames } = error;
+  const { frames } = error;
+  const header = printHeader(error);
 
-  return frames.length ? `${header}\n${__printFrames(error)}` : header;
+  return frames.length ? `${header}\n${frames.join('\n')}` : header;
 }
 
 function printError(error) {

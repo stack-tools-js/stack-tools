@@ -34,11 +34,13 @@ testError.cause = testCause;
 test('can parse a chain of error', (t) => {
   t.deepEqual(parseErrors(testError), [
     {
-      header: testErrorHeader,
+      name: testErrorName,
+      message: testErrorMessage,
       frames: testErrorFrames,
     },
     {
-      header: testCauseHeader,
+      name: testCauseName,
+      message: testCauseMessage,
       frames: testCauseFrames,
     },
   ]);

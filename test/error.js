@@ -23,13 +23,18 @@ testError.stack = testErrorStack;
 
 test('can parse an error', (t) => {
   t.deepEqual(parseError(testError), {
-    header: testErrorHeader,
+    name: testErrorName,
+    message: testErrorMessage,
     frames: testErrorFrames,
   });
 });
 
 test('can print an error header', (t) => {
   t.is(printErrorHeader(testError), testErrorHeader);
+
+  t.is(printErrorHeader({ name: '', message: '' }), 'Error');
+  t.is(printErrorHeader({ name: '', message: 'foo' }), 'Error: foo');
+  t.is(printErrorHeader({ name: 'TypeError', message: '' }), 'TypeError');
 });
 
 test('can print an error', (t) => {

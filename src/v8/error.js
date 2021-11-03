@@ -3,22 +3,21 @@ const isError = require('iserror');
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const { parseHeader, printHeader } = require('./internal/header.js');
 const { buildCallSite } = require('./internal/frame-shared.js');
 const { parseFrame, printFrame, isInternalFrame } = require('./frame.js');
-const base = require('../error');
+const base = require('../error.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
 function __parseError(error, options = {}) {
   const { strict = false } = options;
-  const parsedError = strict
+  const { header, frames } = strict
     ? parseUnambiguous(ErrorGrammar, error)
     : parseUnambiguous(ErrorsGrammar, error)[0];
 
-  const frames = parsedError.frames.map((frame) => parseFrame(frame));
-
-  return { ...error, frames };
+  return { ...parseHeader(header), frames: frames.map((frame) => parseFrame(frame)) };
 }
 
 function parseError(error, options) {
@@ -36,9 +35,10 @@ function parseError(error, options) {
 }
 
 function __printError(error) {
-  const header = base.printErrorHeader(error);
-  const frames = __printFrames(error);
-  return frames ? `${header}\n${frames}` : frames;
+  const { frames } = error;
+  const header = printHeader(error);
+
+  return frames.length ? `${header}\n${__printFrames(error)}` : header;
 }
 
 function printError(error, options) {

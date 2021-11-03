@@ -28,7 +28,8 @@ Utilities that work with stacks from any environment are in the `stack-tools` mo
 
 ```ts
 type ParsedError {
-  header: string; // equivalent to printErrorHeader(error)
+  name: string;
+  message: string;
   frames: Array<string>;
 }
 ```
@@ -53,9 +54,10 @@ Utilities for working with v8 stacks (used by node, Chrome, and Chromium based b
 
 ```ts
 type ParsedError = {
-  header: string;
+  name: string;
+  message: string;
   frames: Array<Frame>;
-  prefix: string; // 'Caused by:' or other similar text ending in ':'
+  prefix: string; // 'Caused by' or other similar text
 };
 
 type Frame = {
