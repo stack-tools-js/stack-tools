@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Utilites for printing and parsing errors and their stacks",
   "license": "MIT",
-  "repository": "conartist6/stack-tools",
+  "repository": "stack-tools-js/stack-tools",
   "main": "lib/index.js",
   "files": [
     "lib/*"
