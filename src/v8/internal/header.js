@@ -38,7 +38,11 @@ function parseChainedHeader(header) {
   } else if (prefix) {
     return { name: '', message, prefix };
   } else {
-    return { name: '', message: '', prefix: '' };
+    throw new Error(
+      // eslint-disable-next-line no-template-curly-in-string
+      'Expected `${prefix}: ${name}: ${message}` or `${prefix}: ${name}: ${message}` or `${prefix}`\n' +
+        `\`${header}\``,
+    );
   }
 }
 

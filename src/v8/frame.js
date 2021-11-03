@@ -29,12 +29,7 @@ function parseFrame(str) {
   } catch (e) {
     // The ambiguous grammar is more powerful, and may be able to parse this
 
-    let results;
-    try {
-      results = parse(FrameGrammar, str);
-    } catch (e) {
-      return null;
-    }
+    const results = parse(FrameGrammar, str);
 
     // The frame grammar is fundamentally ambiguous
     // We must make some decisions about what is most likely to be correct

@@ -7,14 +7,14 @@ const nativeFrame = { call: null, site: { type: 'native' } };
 
 test('can reprint a string error', (t) => {
   const stack = stripIndent`
-  ReferenceError: a is not defined
-    at native
-  From previous event:
-    at native
-  Caused by: ZargothError
-    at native
-  And even before that there was: OriginalError: Where it all began!
-    at native`;
+    ReferenceError: a is not defined
+      at native
+    From previous event:
+      at native
+    Caused by: ZargothError
+      at native
+    And even before that there was: OriginalError: Where it all began!
+      at native`;
 
   const frames = [nativeFrame];
 
@@ -47,4 +47,13 @@ test('can reprint a string error', (t) => {
   ]);
 
   t.is(printErrors(parsed), stack);
+
+  // If you leave out the colon it's wrong no matter what it says.
+  const badStack = stripIndent`
+    ReferenceError: a is not defined
+      at native
+    Caused by
+      at native`;
+
+  t.throws(() => parseErrors(badStack));
 });

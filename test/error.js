@@ -27,6 +27,8 @@ test('can parse an error', (t) => {
     message: testErrorMessage,
     frames: testErrorFrames,
   });
+
+  t.throws(() => parseError(2));
 });
 
 test('can print an error header', (t) => {

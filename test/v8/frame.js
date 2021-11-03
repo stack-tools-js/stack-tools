@@ -1,7 +1,11 @@
 const test = require('ava');
-const { isInternalFrame } = require('../../src/v8');
+const { parseFrame, isInternalFrame } = require('../../src/v8');
 
-test('is internal frame', (t) => {
+test('parseFrame', (t) => {
+  t.throws(() => parseFrame('2'));
+});
+
+test('isInternalFrame', (t) => {
   t.true(isInternalFrame({ call: null, site: { type: 'native' } }));
   t.false(isInternalFrame({ call: null, site: { type: 'file' } }));
 });
