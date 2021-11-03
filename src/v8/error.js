@@ -43,7 +43,7 @@ function __printError(error) {
 
 function printError(error, options) {
   if (isError(error)) {
-    const parsedError = __parseError(error, options);
+    const parsedError = parseError(error, options);
     return __printError(parsedError);
   } else {
     return __printError(error);
@@ -63,14 +63,22 @@ function printFrames(error) {
   }
 }
 
-function cleanError(error, predicate = isInternalFrame) {
-  const { stack } = error;
-  const cleaned = stack.filter((frame) => predicate(frame));
-  if (stack.length && !cleaned.length) {
+function __cleanError(error, predicate) {
+  const { frames } = error;
+  const cleaned = frames.filter((frame) => !predicate(frame));
+  if (frames.length && !cleaned.length) {
     cleaned.push(buildCallSite(null, { type: 'omitted' }));
   }
-  error.stack = cleaned;
+  error.frames = cleaned;
   return error;
+}
+
+function cleanError(error, predicate = isInternalFrame) {
+  if (typeof error === 'string') {
+    return printError(__cleanError(parseError(error), predicate));
+  } else {
+    return __cleanError(error, predicate);
+  }
 }
 
 module.exports = {
