@@ -1,10 +1,12 @@
 const test = require('ava');
 const { stripIndent } = require('common-tags');
 
-const { parseErrors, printErrors } = require('../../src/v8');
+const { parseErrors, cleanErrors, printErrors } = require('../../src/v8');
 
 const {
   nativeFrame,
+  fileFooFrame,
+  fileBarFrame,
   testCauseName,
   testCauseMessage,
   testCauseFrames,
@@ -80,6 +82,21 @@ test('can parse a causal chain of errors', (t) => {
       name: testCauseName,
       message: testCauseMessage,
       frames: testCauseFrames,
+    },
+  ]);
+});
+
+test('cleans a causal chain of errors', (t) => {
+  t.deepEqual(cleanErrors(parseErrors(testError)), [
+    {
+      name: testErrorName,
+      message: testErrorMessage,
+      frames: [fileFooFrame],
+    },
+    {
+      name: testCauseName,
+      message: testCauseMessage,
+      frames: [fileBarFrame],
     },
   ]);
 });

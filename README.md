@@ -36,6 +36,7 @@ type ParsedError {
 
 The base API provides the following methods:
 
+- `getErrors(error)` returns an array of causally related errors, e.g. `[error, error.cause, error.cause.cause]`
 - `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
 - `parseErrors(errors)` returns an array of parsed errors
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.

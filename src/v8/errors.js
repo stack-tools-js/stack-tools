@@ -16,7 +16,7 @@ const { parseFrame, isInternalFrame } = require('./frame.js');
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
-function __parseError(error, options = {}) {
+function __parseErrors(error, options = {}) {
   const { strict = false } = options;
   const parsedErrors = strict
     ? [parseUnambiguous(ErrorGrammar, error)]
@@ -34,14 +34,12 @@ function __parseError(error, options = {}) {
 function parseErrors(errors, options = {}) {
   if (isError(errors)) {
     const chain = [];
-
     for (let cause = errors; cause; cause = cause.cause) {
-      const errorChain = __parseError(cause.stack, options);
-      chain.push(...errorChain);
+      chain.push(...__parseErrors(cause.stack, options));
     }
     return chain;
   } else {
-    return __parseError(errors);
+    return __parseErrors(errors);
   }
 }
 

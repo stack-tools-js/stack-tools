@@ -1,15 +1,19 @@
 const isError = require('iserror');
 
 const { printHeader } = require('./internal/header.js');
-const { parseError, printError } = require('./error');
+const { parseError, printError } = require('./error.js');
 
-function parseErrors(error) {
-  if (isError(error)) {
-    const chain = [];
-    for (let cause = error; cause; cause = cause.cause) {
-      chain.push(parseError(cause));
-    }
-    return chain;
+function getErrors(error) {
+  const errors = [];
+  for (let cause = error; cause; cause = cause.cause) {
+    errors.push(cause);
+  }
+  return errors;
+}
+
+function parseErrors(errors) {
+  if (isError(errors)) {
+    return getErrors(errors).map((error) => parseError(error));
   } else {
     throw new Error('error argument to parseError must be an Error');
   }
@@ -26,15 +30,7 @@ function __printErrorHeaders(errors) {
 }
 
 function printErrorHeaders(errors) {
-  if (isError(errors)) {
-    const chain = [];
-    for (let cause = errors; cause; cause = cause.cause) {
-      chain.push(cause);
-    }
-    return __printErrorHeaders(chain);
-  } else {
-    return __printErrorHeaders(errors);
-  }
+  return __printErrorHeaders(isError(errors) ? getErrors(errors) : errors);
 }
 
 function __printErrors(errors) {
@@ -52,4 +48,4 @@ function printErrors(errors) {
   return __printErrors(isError(errors) ? parseErrors(errors) : errors);
 }
 
-module.exports = { parseErrors, printErrorHeaders, printErrors };
+module.exports = { getErrors, parseErrors, printErrorHeaders, printErrors };

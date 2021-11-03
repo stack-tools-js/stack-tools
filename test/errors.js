@@ -1,12 +1,13 @@
 const test = require('ava');
 
-const { parseErrors, printErrorHeaders, printErrors } = require('../src');
+const { getErrors, parseErrors, printErrorHeaders, printErrors } = require('../src');
 const {
   testCauseName,
   testCauseMessage,
   testCauseHeader,
   testCauseFrames,
   testCauseStack,
+  testCause,
   testErrorName,
   testErrorMessage,
   testErrorHeader,
@@ -14,6 +15,10 @@ const {
   testErrorStack,
   testError,
 } = require('./fixtures/errors.js');
+
+test('can get errors', (t) => {
+  t.deepEqual(getErrors(testError), [testError, testCause]);
+});
 
 test('can parse a chain of error', (t) => {
   t.deepEqual(parseErrors(testError), [
@@ -28,6 +33,9 @@ test('can parse a chain of error', (t) => {
       frames: testCauseFrames,
     },
   ]);
+
+  // We can't parse this because we have no idea what the syntax of stack frames is
+  t.throws(() => parseErrors('Error: Message'));
 });
 
 test('can print a chain of error headers', (t) => {
