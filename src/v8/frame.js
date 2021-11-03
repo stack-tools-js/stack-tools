@@ -131,10 +131,10 @@ function printFrame(frame) {
   if (typeof frame === 'string') return frame;
 
   if (frame.call === null && frame.site.type === 'omitted') {
-    return `  at <omitted>`;
+    return `    at <omitted>`;
   }
 
-  return `  at ${frame.eval ? printEval(frame, frame.eval) : printCallSite(frame)}`;
+  return `    at ${frame.eval ? printEval(frame, frame.eval) : printCallSite(frame)}`;
 }
 
 function isInternalFrame(frame) {

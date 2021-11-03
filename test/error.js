@@ -1,25 +1,14 @@
 const test = require('ava');
 
 const { parseError, printErrorHeader, printFrames, printError } = require('../src');
-
-class TestError extends Error {
-  get name() {
-    return 'TestError';
-  }
-}
-
-const testErrorName = 'TestError';
-const testErrorMessage = '¯\\_(ツ)_/¯';
-const testErrorHeader = `${testErrorName}: ${testErrorMessage}`;
-const testErrorFrames = [
-  '    at <anonymous> (test/index.js:1:1)',
-  '    at buildTestError (test/index.js:2:1)',
-];
-const testErrorStack = `${testErrorHeader}\n${testErrorFrames.join('\n')}`;
-
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
+const {
+  testErrorName,
+  testErrorMessage,
+  testErrorHeader,
+  testErrorFrames,
+  testErrorStack,
+  testError,
+} = require('./fixtures/errors.js');
 
 test('can parse an error', (t) => {
   t.deepEqual(parseError(testError), {

@@ -1,35 +1,19 @@
 const test = require('ava');
 
 const { parseErrors, printErrorHeaders, printErrors } = require('../src');
-
-const testCauseName = 'Error';
-const testCauseMessage = 'the system is down';
-const testCauseHeader = `${testCauseName}: ${testCauseMessage}`;
-const testCauseFrames = [`    at native`];
-const testCauseStack = `${testCauseHeader}\n${testCauseFrames.join('\n')}`;
-const testCause = new Error(testCauseMessage);
-
-testCause.stack = testCauseStack;
-
-class TestError extends Error {
-  get name() {
-    return 'TestError';
-  }
-}
-
-const testErrorName = 'TestError';
-const testErrorMessage = '¯\\_(ツ)_/¯';
-const testErrorHeader = `${testErrorName}: ${testErrorMessage}`;
-const testErrorFrames = [
-  '    at <anonymous> (test/index.js:1:1)',
-  '    at buildTestError (test/index.js:2:1)',
-];
-const testErrorStack = `${testErrorHeader}\n${testErrorFrames.join('\n')}`;
-
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
-testError.cause = testCause;
+const {
+  testCauseName,
+  testCauseMessage,
+  testCauseHeader,
+  testCauseFrames,
+  testCauseStack,
+  testErrorName,
+  testErrorMessage,
+  testErrorHeader,
+  testErrorFrames,
+  testErrorStack,
+  testError,
+} = require('./fixtures/errors.js');
 
 test('can parse a chain of error', (t) => {
   t.deepEqual(parseErrors(testError), [

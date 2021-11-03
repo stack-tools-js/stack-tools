@@ -3,18 +3,29 @@ const { stripIndent } = require('common-tags');
 
 const { parseErrors, printErrors } = require('../../src/v8');
 
-const nativeFrame = { call: null, site: { type: 'native' } };
+const {
+  nativeFrame,
+  testCauseName,
+  testCauseMessage,
+  testCauseFrames,
+  testCauseStack,
+  testErrorName,
+  testErrorMessage,
+  testErrorStack,
+  testError,
+  testErrorFrames,
+} = require('./fixtures/errors.js');
 
 test('can reprint a string error', (t) => {
   const stack = stripIndent`
     ReferenceError: a is not defined
-      at native
+        at native
     From previous event:
-      at native
+        at native
     Caused by: ZargothError
-      at native
+        at native
     And even before that there was: OriginalError: Where it all began!
-      at native`;
+        at native`;
 
   const frames = [nativeFrame];
 
@@ -51,9 +62,28 @@ test('can reprint a string error', (t) => {
   // If you leave out the colon it's wrong no matter what it says.
   const badStack = stripIndent`
     ReferenceError: a is not defined
-      at native
+        at native
     Caused by
-      at native`;
+        at native`;
 
   t.throws(() => parseErrors(badStack));
+});
+
+test('can parse a causal chain of errors', (t) => {
+  t.deepEqual(parseErrors(testError), [
+    {
+      name: testErrorName,
+      message: testErrorMessage,
+      frames: testErrorFrames,
+    },
+    {
+      name: testCauseName,
+      message: testCauseMessage,
+      frames: testCauseFrames,
+    },
+  ]);
+});
+
+test('can print a causal chain of errors', (t) => {
+  t.is(printErrors(testError), `${testErrorStack}\nCaused by: ${testCauseStack}`);
 });
