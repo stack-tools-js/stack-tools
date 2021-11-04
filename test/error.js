@@ -2,6 +2,7 @@ const test = require('ava');
 
 const { parseError, printErrorHeader, printFrames, printError } = require('../src');
 const {
+  TestError,
   testErrorName,
   testErrorMessage,
   testErrorHeader,
@@ -17,7 +18,34 @@ test('can parse an error', (t) => {
     frames: testErrorFrames,
   });
 
+  const noStackError = new TestError(testErrorMessage);
+  noStackError.stack = null;
+
+  t.deepEqual(parseError(noStackError), {
+    name: testErrorName,
+    message: testErrorMessage,
+  });
+
+  const badStackError = new TestError(testErrorMessage);
+  badStackError.stack = 'Nonsense\n    at foo.js:1:1';
+  t.deepEqual(parseError(badStackError), {
+    name: testErrorName,
+    message: testErrorMessage,
+  });
+
   t.throws(() => parseError(2));
+});
+
+test('can parse an error printed with displayName', (t) => {
+  const testError = new Error(testErrorMessage);
+  testError.displayName = testErrorName;
+  testError.stack = `${testErrorName}: ${testErrorMessage}\n${testErrorFrames.join('\n')}`;
+
+  t.deepEqual(parseError(testError), {
+    name: 'Error',
+    message: testErrorMessage,
+    frames: testErrorFrames,
+  });
 });
 
 test('can print an error header', (t) => {
@@ -30,8 +58,14 @@ test('can print an error header', (t) => {
 
 test('can print an error', (t) => {
   t.is(printError(testError), testErrorStack);
+
+  const emptyStackError = new TestError(testErrorMessage);
+  emptyStackError.stack = testErrorHeader;
+
+  t.is(printError(emptyStackError), testErrorHeader);
 });
 
 test("can print an error's stack frames", (t) => {
   t.is(printFrames(testError), testErrorFrames.join('\n'));
+  t.is(printFrames(parseError(testError)), testErrorFrames.join('\n'));
 });

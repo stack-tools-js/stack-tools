@@ -26,11 +26,7 @@ function parseError(error, options) {
   } else if (typeof error === 'string') {
     return __parseError(error, options);
   } else {
-    throw new TypeError(
-      `error argument to parseError must be an Error or string but received \`${
-        error == null ? `${error}` : typeof error
-      }\``,
-    );
+    throw new TypeError(`error argument to parseError must be an Error or string`);
   }
 }
 
@@ -38,7 +34,7 @@ function __printError(error) {
   const { frames } = error;
   const header = printHeader(error);
 
-  return frames.length ? `${header}\n${__printFrames(error)}` : header;
+  return frames && frames.length ? `${header}\n${__printFrames(error)}` : header;
 }
 
 function printError(error, options) {

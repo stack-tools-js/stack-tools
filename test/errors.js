@@ -41,9 +41,11 @@ test('can parse a chain of error', (t) => {
 test('can print a chain of error headers', (t) => {
   const expected = `${testErrorHeader}\nCaused by: ${testCauseHeader}`;
   t.is(printErrorHeaders(testError), expected);
+  t.is(printErrorHeaders(parseErrors(testError)), expected);
 });
 
 test('can print a chain of errors', (t) => {
   const expected = `${testErrorStack}\nCaused by: ${testCauseStack}`;
   t.is(printErrors(testError), expected);
+  t.is(printErrors(parseErrors(testError)), expected);
 });

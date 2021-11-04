@@ -41,16 +41,15 @@ function parseFrame(str) {
       let score = 0;
       // Use powers of two to ensure that scores are unambiguous
 
-      if (eval_) score += 32;
-      if (call && call.constructor) score += 16;
-      if (call && call.method !== call.function) score += 8;
-      if (call && call.function) score += 4;
-      if (
-        site &&
-        (site.type === 'path' || site.type === 'uri') &&
-        isBalanced(site.type === 'path' ? site.path : site.uri)
-      )
-        score += 2;
+      if (eval_) score += 64;
+      if (call && call.constructor) score += 32;
+      if (call && call.method !== call.function) score += 16;
+      if (call && call.function) score += 8;
+      if (site && site.type !== 'path' && site.type !== 'uri') score += 4;
+      if (call && isBalanced(call.function)) score += 2;
+      if (site && (site.type === 'path' || site.type === 'uri') && isBalanced(site.path)) {
+        score += 1;
+      }
 
       if (score > bestScore) {
         bestScore = score;

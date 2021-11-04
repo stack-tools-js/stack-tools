@@ -2,8 +2,10 @@ const test = require('ava');
 const { stripIndent } = require('common-tags');
 
 const { parseErrors, cleanErrors, printErrors } = require('../../src/v8');
+const { nativeFrameStr } = require('./fixtures/error');
 
 const {
+  TestError,
   nativeFrame,
   fileFooFrame,
   fileBarFrame,
@@ -11,8 +13,10 @@ const {
   testCauseMessage,
   testCauseFrames,
   testCauseStack,
+  testCause,
   testErrorName,
   testErrorMessage,
+  testErrorHeader,
   testErrorStack,
   testError,
   testErrorFrames,
@@ -27,6 +31,7 @@ test('can reprint a string error', (t) => {
     Caused by: ZargothError
         at native
     And even before that there was: OriginalError: Where it all began!
+        And sometimes there is more text
         at native`;
 
   const frames = [nativeFrame];
@@ -49,11 +54,10 @@ test('can reprint a string error', (t) => {
       name: 'ZargothError',
       message: '',
       frames,
-      prefix: 'Caused by',
     },
     {
       name: 'OriginalError',
-      message: 'Where it all began!',
+      message: 'Where it all began!\n    And sometimes there is more text',
       frames,
       prefix: 'And even before that there was',
     },
@@ -86,6 +90,35 @@ test('can parse a causal chain of errors', (t) => {
   ]);
 });
 
+test('when causal headers are present in stack', (t) => {
+  const looseErrorName = 'MagicError';
+  const looseErrorMessage = 'Abracadabra!';
+  const testError = new TestError(testErrorMessage);
+  testError.stack =
+    testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`;
+  testError.cause = testCause;
+
+  t.throws(() => parseErrors(testError, { strict: true }));
+
+  t.deepEqual(parseErrors(testError), [
+    {
+      name: testErrorName,
+      message: testErrorMessage,
+      frames: testErrorFrames,
+    },
+    {
+      name: looseErrorName,
+      message: looseErrorMessage,
+      frames: [nativeFrame],
+    },
+    {
+      name: testCauseName,
+      message: testCauseMessage,
+      frames: testCauseFrames,
+    },
+  ]);
+});
+
 test('cleans a causal chain of errors', (t) => {
   t.deepEqual(cleanErrors(parseErrors(testError)), [
     {
@@ -99,6 +132,12 @@ test('cleans a causal chain of errors', (t) => {
       frames: [fileBarFrame],
     },
   ]);
+});
+
+test('can print an error', (t) => {
+  const headerError = { name: testErrorName, message: testErrorMessage };
+  t.is(printErrors([headerError]), testErrorHeader);
+  t.is(printErrors([{ ...headerError, prefix: 'Id est' }]), testErrorHeader);
 });
 
 test('can print a causal chain of errors', (t) => {

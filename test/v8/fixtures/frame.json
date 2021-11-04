@@ -271,6 +271,23 @@
     "strict": true
   },
   {
+    "string": "    at Object.eval (__dirname/generate-parse- (fixture.js:419:60)",
+    "object": {
+      "call": {
+        "constructor": false,
+        "async": false,
+        "function": "Object.eval",
+        "method": "Object.eval"
+      },
+      "site": {
+        "type": "path",
+        "path": "__dirname/generate-parse- (fixture.js",
+        "line": 419,
+        "column": 60
+      }
+    }
+  },
+  {
     "string": "    at eval (eval at <anonymous> (__dirname/generate-parse-fixture.js:419:60), <anonymous>:1:5)",
     "object": {
       "call": {
@@ -300,6 +317,36 @@
       }
     },
     "strict": true
+  },
+  {
+    "string": "    at eval (eval at <anonymous> ():419:60), <anonymous>:1:5)",
+    "object": {
+      "call": {
+        "constructor": false,
+        "async": false,
+        "function": "eval",
+        "method": "eval"
+      },
+      "site": {
+        "type": "anonymous",
+        "line": 1,
+        "column": 5
+      },
+      "eval": {
+        "call": {
+          "constructor": false,
+          "async": false,
+          "function": "<anonymous>",
+          "method": "<anonymous>"
+        },
+        "site": {
+          "type": "path",
+          "path": ")",
+          "line": 419,
+          "column": 60
+        }
+      }
+    }
   },
   {
     "string": "    at eval (eval at evalFunction (a file with eval .js:1:23), <anonymous>:1:5)",
@@ -696,6 +743,40 @@
       }
     },
     "strict": true
+  },
+  {
+    "string": "    at new (Foo (__dirname/generate-parse-fixture.js:419:60)",
+    "object": {
+      "call": {
+        "constructor": true,
+        "async": false,
+        "function": "(Foo",
+        "method": "(Foo"
+      },
+      "site": {
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
+        "line": 419,
+        "column": 60
+      }
+    }
+  },
+  {
+    "string": "    at new Foo [as (] (__dirname/generate-parse-fixture.js:419:60)",
+    "object": {
+      "call": {
+        "constructor": true,
+        "async": false,
+        "function": "Foo",
+        "method": "("
+      },
+      "site": {
+        "type": "path",
+        "path": "__dirname/generate-parse-fixture.js",
+        "line": 419,
+        "column": 60
+      }
+    }
   },
   {
     "string": "    at arr.map.n (__dirname/generate-parse-fixture.js:419:60)",

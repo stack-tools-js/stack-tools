@@ -51,7 +51,7 @@ function __printErrors(errors) {
     const { frames } = error;
     const header = i === 0 ? printHeader(error) : printChainedHeader(error);
 
-    str += frames.length ? `${header}\n${printFrames(error)}` : header;
+    str += frames && frames.length ? `${header}\n${printFrames(error)}` : header;
   }
 
   return str;

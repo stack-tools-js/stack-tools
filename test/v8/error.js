@@ -2,10 +2,13 @@ const test = require('ava');
 
 const { parseError, printError, printFrames, cleanError } = require('../../src/v8');
 const {
+  TestError,
   nativeFrame,
+  nativeFrameStr,
   fileFooFrame,
   testErrorName,
   testErrorMessage,
+  testErrorHeader,
   testErrorStack,
   testError,
   testErrorFrames,
@@ -44,14 +47,42 @@ test('parses an error', (t) => {
     message: testErrorMessage,
     frames: testErrorFrames,
   });
+
+  t.throws(() => parseError(2));
+});
+
+test('when causal errors are present in the stack', (t) => {
+  const looseErrorName = 'MagicError';
+  const looseErrorMessage = 'Abracadabra!';
+  const testError = new TestError(testErrorMessage);
+  testError.stack =
+    testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`;
+
+  t.throws(() => parseError(testError, { strict: true }));
+
+  t.deepEqual(parseError(testError), {
+    name: testErrorName,
+    message: testErrorMessage,
+    frames: testErrorFrames,
+  });
 });
 
 test('prints an error', (t) => {
   t.is(printError(testError), testErrorStack);
+
+  const headerError = { name: testErrorName, message: testErrorMessage };
+  t.is(printError(headerError), testErrorHeader);
+  t.is(printError({ ...headerError, prefix: 'Id est' }), testErrorHeader);
 });
 
 test("prints an error's frames", (t) => {
   t.is(printFrames(testError), testErrorFramesStr);
+  const parsedError = {
+    name: testErrorName,
+    message: testErrorMessage,
+  };
+  t.is(printFrames({ ...parsedError, frames: testErrorFramesStr.split('\n') }), testErrorFramesStr);
+  t.is(printFrames({ ...parsedError, frames: testErrorFramesStr }), testErrorFramesStr);
 });
 
 test('cleans an error', (t) => {

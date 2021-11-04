@@ -19,11 +19,18 @@ function parseError(error) {
     const headerExp = new RegExp(
       `(?:${names.map((n) => escapeRegex(n)).join('|')}): ${escapeRegex(message)}\n`,
     );
-    const headerMatch = headerExp.exec(stack);
-    const headerlessStack = headerMatch ? stack.slice(headerMatch[0].length) : stack;
-    const frames = headerlessStack.split('\n');
 
-    return { name, message, frames };
+    if (stack) {
+      const headerMatch = headerExp.exec(stack);
+      if (headerMatch) {
+        return {
+          name,
+          message,
+          frames: stack.slice(headerMatch[0].length).split('\n'),
+        };
+      }
+    }
+    return { name, message };
   } else {
     throw new Error('error argument to parseError must be an Error');
   }
@@ -45,7 +52,7 @@ function __printError(error) {
   const { frames } = error;
   const header = printHeader(error);
 
-  return frames.length ? `${header}\n${frames.join('\n')}` : header;
+  return frames && frames.length ? `${header}\n${frames.join('\n')}` : header;
 }
 
 function printError(error) {

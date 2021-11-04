@@ -14,9 +14,11 @@ function parseHeader(header) {
 }
 
 function parseChainedHeader(header) {
+  const nlIdx = header.indexOf('\n');
+  const headerExtra = nlIdx >= 0 ? header.slice(nlIdx + 1) : '';
+  let message = nlIdx >= 0 ? header.slice(0, nlIdx) : header;
   let prefix = '';
   let name = '';
-  let message = header;
 
   const colonIdx = message.indexOf(':');
   if (colonIdx >= 0) {
@@ -33,16 +35,19 @@ function parseChainedHeader(header) {
     }
   }
 
-  if (prefix && name) {
-    return { name, message, prefix };
-  } else if (prefix) {
-    return { name: '', message, prefix };
-  } else {
+  if (!prefix) {
     throw new Error(
       // eslint-disable-next-line no-template-curly-in-string
-      'Expected `${prefix}: ${name}: ${message}` or `${prefix}: ${name}: ${message}` or `${prefix}`\n' +
-        `\`${header}\``,
+      `stack line is neither a frame or a chained error header: \`${header}\``,
     );
+  }
+
+  if (headerExtra) message = `${message}\n${headerExtra}`;
+
+  if (prefix && !/^caused by$/i.test(prefix)) {
+    return { name, message, prefix };
+  } else {
+    return { name, message };
   }
 }
 
