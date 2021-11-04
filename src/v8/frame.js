@@ -23,6 +23,30 @@ const isBalanced = (str) => {
   return parens === 0;
 };
 
+function scoreCallSite(callSite, p) {
+  const { call, site } = callSite;
+
+  let score = 0;
+  // Use powers of two to ensure that scores are unambiguous
+
+  if (call) {
+    score += 2 ^ (p + 6);
+
+    const { constructor, method, function: function_ } = call;
+
+    if (constructor) score += 2 ^ (p + 5);
+    if (method !== function_) score += 2 ^ (p + 4);
+    if (function_) score += 2 ^ (p + 3);
+    if (isBalanced(function_)) score += 2 ^ (p + 2);
+  }
+
+  if (site && site.type !== 'path' && site.type !== 'uri') score += 2 ^ (p + 1);
+  if (site && (site.type === 'path' || site.type === 'uri') && isBalanced(site.path)) {
+    score += 2 ^ p;
+  }
+  return score;
+}
+
 function parseFrame(str) {
   try {
     return parseFrameStrict(str);
@@ -36,20 +60,16 @@ function parseFrame(str) {
     let best = null;
     let bestScore = -1;
     for (const result of results) {
-      const { eval: eval_, call, site } = result;
+      const { eval: eval_ } = result;
 
       let score = 0;
       // Use powers of two to ensure that scores are unambiguous
 
-      if (eval_) score += 64;
-      if (call && call.constructor) score += 32;
-      if (call && call.method !== call.function) score += 16;
-      if (call && call.function) score += 8;
-      if (site && site.type !== 'path' && site.type !== 'uri') score += 4;
-      if (call && isBalanced(call.function)) score += 2;
-      if (site && (site.type === 'path' || site.type === 'uri') && isBalanced(site.path)) {
-        score += 1;
+      // TODO repeat these checks on eval
+      if (eval_) {
+        score += scoreCallSite(eval_, 7);
       }
+      score += scoreCallSite(result, 0);
 
       if (score > bestScore) {
         bestScore = score;

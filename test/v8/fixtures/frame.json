@@ -276,12 +276,12 @@
       "call": {
         "constructor": false,
         "async": false,
-        "function": "Object.eval",
-        "method": "Object.eval"
+        "function": "Object.eval (__dirname/generate-parse-",
+        "method": "Object.eval (__dirname/generate-parse-"
       },
       "site": {
         "type": "path",
-        "path": "__dirname/generate-parse- (fixture.js",
+        "path": "fixture.js",
         "line": 419,
         "column": 60
       }
