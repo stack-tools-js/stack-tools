@@ -7,7 +7,10 @@ export function getErrors(error: Error): Array<Error>;
 
 export function parseError(error: Error): ParsedError;
 
-export function replaceMessage(error: Error, message: string): Error;
+export function replaceMessage(
+  error: Error,
+  message: string | ((message: string) => string),
+): Error;
 
 export function printErrorHeader(error: Error | ParsedError): string;
 

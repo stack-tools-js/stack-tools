@@ -36,13 +36,14 @@ function parseError(error) {
 
 function replaceMessage(error, message) {
   const { name } = error;
+  const message_ = typeof message === 'function' ? message(error.message) : message;
   if (error.stack) {
     const oldHeader = printErrorHeader(error);
     error.stack =
-      printErrorHeader({ name, message }) +
+      printErrorHeader({ name, message: message_ }) +
       error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
   }
-  error.message = message;
+  error.message = message_;
 
   return error;
 }

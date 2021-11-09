@@ -71,7 +71,7 @@ The following methods are provided:
 
 - `getErrors(error)` returns an array of causally related errors, e.g. `[error, error.cause, error.cause.cause]`,
 - `parseError(error)` returns `` { name, message, frames: Array<string>}` ``.
-- `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`.
+- `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`. `message` may also be a `message => newMessage` callback.
 - `parseErrors(errors)` returns an array of parsed errors
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``

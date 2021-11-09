@@ -51,14 +51,17 @@ test('can parse an error printed with displayName', (t) => {
 test('can replace an error message', (t) => {
   let message, stack;
   const newMessage = 'Who let the dogs out??';
-  const testError = makeTestError();
-
-  ({ message, stack } = replaceMessage(testError, newMessage));
   const newHeader = `${testErrorName}: ${newMessage}`;
+
+  ({ message, stack } = replaceMessage(makeTestError(), newMessage));
 
   t.is(message, newMessage);
   t.true(stack.startsWith(newHeader));
   t.is(stack.slice(newHeader.length + 1), testErrorFrames.join('\n'));
+
+  ({ message, stack } = replaceMessage(makeTestError(), (message) => `${message} : )`));
+
+  t.is(message, `${testErrorMessage} : )`);
 
   ({ message, stack } = replaceMessage(makeTestError({ stack: null }), newMessage));
 
