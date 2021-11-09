@@ -22,7 +22,7 @@ export type Site =
       type: 'native';
     }
   | {
-      type: 'file';
+      type: 'path';
       path: string;
       column: number;
       line: number;

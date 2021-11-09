@@ -23,7 +23,7 @@ const internalPackages = new Set([
 const isInternalFrame = (frame) => {
   return (
     isNodeInternalFrame(frame) ||
-    (frame.site.type === 'file' &&
+    (frame.site.type === 'path' &&
       internalPackages.has(getPackageName(frame.site.file)))
   );
 };
