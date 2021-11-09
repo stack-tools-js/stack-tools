@@ -9,6 +9,12 @@
     "directory": "packages/stack-tools"
   },
   "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js"
+    }
+  },
   "files": [
     "lib/*"
   ],
