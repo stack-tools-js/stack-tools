@@ -97,6 +97,6 @@ type Site =
 
 `v8-tools` also defines the following additional methods:
 
-- `isInternalFrame(frame)` returns `true` if frame is internal.
+- `isInternalFrame(frame)` returns `true` if frame represents a location internal to the v8 runtime.
 - `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
 - `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.

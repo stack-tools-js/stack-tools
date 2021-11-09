@@ -157,7 +157,8 @@ function printFrame(frame) {
 }
 
 function isInternalFrame(frame) {
-  return frame.site.type === 'native';
+  const siteType = frame.site.type;
+  return siteType === 'native' || siteType === 'index';
 }
 
 module.exports = { parseFrame, printFrame, isInternalFrame };

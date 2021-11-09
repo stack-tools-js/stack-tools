@@ -18,7 +18,6 @@ const natives = [
   /\/\.node-spawn-wrap-\w+-\w+\/node$/,
 ];
 
-// (node:)?internal/.+
 function isInternalFrame(frame) {
   const { site } = frame;
   return (
