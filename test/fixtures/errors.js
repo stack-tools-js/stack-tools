@@ -16,10 +16,16 @@ const testCause = new Error(testCauseMessage);
 
 testCause.stack = testCauseStack;
 
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
-testError.cause = testCause;
+const makeTestErrors = ({
+  message = testErrorMessage,
+  stack = testErrorStack,
+  cause = testCause,
+} = {}) => {
+  const testError = new TestError(message);
+  testError.stack = stack;
+  testError.cause = cause;
+  return testError;
+};
 
 module.exports = {
   TestError,
@@ -34,5 +40,5 @@ module.exports = {
   testErrorHeader,
   testErrorFrames,
   testErrorStack,
-  testError,
+  makeTestErrors,
 };

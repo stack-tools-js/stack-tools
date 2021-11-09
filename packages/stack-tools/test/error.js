@@ -1,34 +1,34 @@
 const test = require('ava');
 
-const { parseError, printErrorHeader, printFrames, printError } = require('stack-tools');
 const {
-  TestError,
+  parseError,
+  replaceMessage,
+  printErrorHeader,
+  printFrames,
+  printError,
+} = require('stack-tools');
+const { makeTestError } = require('../../../test/fixtures/error.js');
+const {
   testErrorName,
   testErrorMessage,
   testErrorHeader,
   testErrorFrames,
   testErrorStack,
-  testError,
 } = require('../../../test/fixtures/errors.js');
 
 test('can parse an error', (t) => {
-  t.deepEqual(parseError(testError), {
+  t.deepEqual(parseError(makeTestError()), {
     name: testErrorName,
     message: testErrorMessage,
     frames: testErrorFrames,
   });
 
-  const noStackError = new TestError(testErrorMessage);
-  noStackError.stack = null;
-
-  t.deepEqual(parseError(noStackError), {
+  t.deepEqual(parseError(makeTestError({ stack: null })), {
     name: testErrorName,
     message: testErrorMessage,
   });
 
-  const badStackError = new TestError(testErrorMessage);
-  badStackError.stack = 'Nonsense\n    at foo.js:1:1';
-  t.deepEqual(parseError(badStackError), {
+  t.deepEqual(parseError(makeTestError({ stack: 'Nonsense\n    at foo.js:1:1' })), {
     name: testErrorName,
     message: testErrorMessage,
   });
@@ -48,8 +48,26 @@ test('can parse an error printed with displayName', (t) => {
   });
 });
 
+test('can replace an error message', (t) => {
+  let message, stack;
+  const newMessage = 'Who let the dogs out??';
+  const testError = makeTestError();
+
+  ({ message, stack } = replaceMessage(testError, newMessage));
+  const newHeader = `${testErrorName}: ${newMessage}`;
+
+  t.is(message, newMessage);
+  t.true(stack.startsWith(newHeader));
+  t.is(stack.slice(newHeader.length + 1), testErrorFrames.join('\n'));
+
+  ({ message, stack } = replaceMessage(makeTestError({ stack: null }), newMessage));
+
+  t.is(message, newMessage);
+  t.is(stack, null);
+});
+
 test('can print an error header', (t) => {
-  t.is(printErrorHeader(testError), testErrorHeader);
+  t.is(printErrorHeader(makeTestError()), testErrorHeader);
 
   t.is(printErrorHeader({ name: '', message: '' }), 'Error');
   t.is(printErrorHeader({ name: '', message: 'foo' }), 'Error: foo');
@@ -57,15 +75,12 @@ test('can print an error header', (t) => {
 });
 
 test('can print an error', (t) => {
-  t.is(printError(testError), testErrorStack);
+  t.is(printError(makeTestError()), testErrorStack);
 
-  const emptyStackError = new TestError(testErrorMessage);
-  emptyStackError.stack = testErrorHeader;
-
-  t.is(printError(emptyStackError), testErrorHeader);
+  t.is(printError(makeTestError({ stack: testErrorHeader })), testErrorHeader);
 });
 
 test("can print an error's stack frames", (t) => {
-  t.is(printFrames(testError), testErrorFrames.join('\n'));
-  t.is(printFrames(parseError(testError)), testErrorFrames.join('\n'));
+  t.is(printFrames(makeTestError()), testErrorFrames.join('\n'));
+  t.is(printFrames(parseError(makeTestError())), testErrorFrames.join('\n'));
 });

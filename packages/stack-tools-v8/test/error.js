@@ -2,7 +2,6 @@ const test = require('ava');
 
 const { parseError, printError, printFrames, cleanError } = require('@stack-tools/v8-tools');
 const {
-  TestError,
   nativeFrame,
   nativeFrameStr,
   fileFooFrame,
@@ -10,9 +9,9 @@ const {
   testErrorMessage,
   testErrorHeader,
   testErrorStack,
-  testError,
   testErrorFrames,
   testErrorFramesStr,
+  makeTestError,
 } = require('./fixtures/error.js');
 
 test('works when there are no stack frames', (t) => {
@@ -42,7 +41,7 @@ test('eliminates extra whitespace at the beginning end of message and frames', (
 });
 
 test('parses an error', (t) => {
-  t.deepEqual(parseError(testError), {
+  t.deepEqual(parseError(makeTestError()), {
     name: testErrorName,
     message: testErrorMessage,
     frames: testErrorFrames,
@@ -54,9 +53,10 @@ test('parses an error', (t) => {
 test('when causal errors are present in the stack', (t) => {
   const looseErrorName = 'MagicError';
   const looseErrorMessage = 'Abracadabra!';
-  const testError = new TestError(testErrorMessage);
-  testError.stack =
-    testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`;
+  const testError = makeTestError({
+    stack:
+      testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`,
+  });
 
   t.throws(() => parseError(testError, { strict: true }));
 
@@ -68,7 +68,7 @@ test('when causal errors are present in the stack', (t) => {
 });
 
 test('prints an error', (t) => {
-  t.is(printError(testError), testErrorStack);
+  t.is(printError(makeTestError()), testErrorStack);
 
   const headerError = { name: testErrorName, message: testErrorMessage };
   t.is(printError(headerError), testErrorHeader);
@@ -76,7 +76,7 @@ test('prints an error', (t) => {
 });
 
 test("prints an error's frames", (t) => {
-  t.is(printFrames(testError), testErrorFramesStr);
+  t.is(printFrames(makeTestError()), testErrorFramesStr);
   const parsedError = {
     name: testErrorName,
     message: testErrorMessage,
@@ -86,7 +86,7 @@ test("prints an error's frames", (t) => {
 });
 
 test('cleans an error', (t) => {
-  t.deepEqual(cleanError(parseError(testError)), {
+  t.deepEqual(cleanError(parseError(makeTestError())), {
     name: testErrorName,
     message: testErrorMessage,
     frames: [fileFooFrame],

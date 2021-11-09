@@ -3,7 +3,11 @@ export type ParsedError = {
   frames: Array<string>;
 };
 
+export function getErrors(error: Error): Array<Error>;
+
 export function parseError(error: Error): ParsedError;
+
+export function replaceMessage(error: Error, message: string): Error;
 
 export function printErrorHeader(error: Error | ParsedError): string;
 

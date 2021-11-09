@@ -34,6 +34,19 @@ function parseError(error) {
   }
 }
 
+function replaceMessage(error, message) {
+  const { name } = error;
+  if (error.stack) {
+    const oldHeader = printErrorHeader(error);
+    error.stack =
+      printErrorHeader({ name, message }) +
+      error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
+  }
+  error.message = message;
+
+  return error;
+}
+
 function printErrorHeader(error) {
   const { name, message } = error;
   return name && message ? `${name}: ${message}` : message ? `Error: ${message}` : name || 'Error';
@@ -58,4 +71,4 @@ function printError(error) {
   return __printError(isError(error) ? parseError(error) : error);
 }
 
-module.exports = { parseError, printErrorHeader, printFrames, printError };
+module.exports = { parseError, replaceMessage, printErrorHeader, printFrames, printError };

@@ -4,6 +4,10 @@
 
 ## Usage
 
+Here are some of the most common usages of stack tools:
+
+When code in your application or a library throws errors with `error.cause` properties, you can use `stack-tools` to print them so that all information about the error is preserved.
+
 ```js
 import { printErrors } from 'stack-tools';
 
@@ -22,6 +26,8 @@ try {
 }
 ```
 
+Sometimes it is useful to reuse some code for building errors, but that code tends to end up on the stack, where it makes it harder for the developer to spot where the program entered a throw code path. `stack-tools` can be used to omit some frames.
+
 ```js
 import { parseError, printError } from 'stack-tools';
 
@@ -29,11 +35,23 @@ function makeBeautifulError() {
   const err = new Error('Everything else has gone wrong');
 
   const parsed = parseError(err);
-  // Eliminate the stack frame for makeBeautifulError
   parsed.stack = parsed.stack.slice(1);
   err.stack = printError(parsed);
 
   return err;
+}
+```
+
+If `error.cause` is overkill for your needs, you can add some extra information to an error by replacing its message. This function ensures that `error.stack` is also updated appropriately.
+
+```js
+import { replaceMessage } from 'stack-tools';
+
+const id;
+try {
+  /* */
+} catch(e) {
+  replaceMessage(e, `${e.message}\nid: ${id}`)
 }
 ```
 
@@ -51,8 +69,9 @@ type ParsedError {
 
 The following methods are provided:
 
-- `getErrors(error)` returns an array of causally related errors, e.g. `[error, error.cause, error.cause.cause]`
-- `parseError(error)` returns `` {header: `${error.name}: ${error.message}`, frames: Array<string>}` ``.
+- `getErrors(error)` returns an array of causally related errors, e.g. `[error, error.cause, error.cause.cause]`,
+- `parseError(error)` returns `` { name, message, frames: Array<string>}` ``.
+- `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`.
 - `parseErrors(errors)` returns an array of parsed errors
 - `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
 - `printErrorHeader(error)` returns `` `${name}: ${message}` ``

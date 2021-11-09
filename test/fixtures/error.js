@@ -13,9 +13,11 @@ const testErrorFrames = [
 ];
 const testErrorStack = `${testErrorHeader}\n${testErrorFrames.join('\n')}`;
 
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
+const makeTestError = ({ message = testErrorMessage, stack = testErrorStack } = {}) => {
+  const testError = new TestError(message);
+  testError.stack = stack;
+  return testError;
+};
 
 module.exports = {
   TestError,
@@ -24,5 +26,5 @@ module.exports = {
   testErrorHeader,
   testErrorFrames,
   testErrorStack,
-  testError,
+  makeTestError,
 };

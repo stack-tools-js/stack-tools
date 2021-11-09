@@ -5,7 +5,6 @@ const { parseErrors, cleanErrors, printErrors } = require('@stack-tools/v8-tools
 const { nativeFrameStr } = require('./fixtures/error');
 
 const {
-  TestError,
   nativeFrame,
   fileFooFrame,
   fileBarFrame,
@@ -18,8 +17,8 @@ const {
   testErrorMessage,
   testErrorHeader,
   testErrorStack,
-  testError,
   testErrorFrames,
+  makeTestErrors,
 } = require('./fixtures/errors.js');
 
 test('can reprint a string error', (t) => {
@@ -76,7 +75,7 @@ test('can reprint a string error', (t) => {
 });
 
 test('can parse a causal chain of errors', (t) => {
-  t.deepEqual(parseErrors(testError), [
+  t.deepEqual(parseErrors(makeTestErrors()), [
     {
       name: testErrorName,
       message: testErrorMessage,
@@ -93,10 +92,11 @@ test('can parse a causal chain of errors', (t) => {
 test('when causal headers are present in stack', (t) => {
   const looseErrorName = 'MagicError';
   const looseErrorMessage = 'Abracadabra!';
-  const testError = new TestError(testErrorMessage);
-  testError.stack =
-    testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`;
-  testError.cause = testCause;
+  const testError = makeTestErrors({
+    stack:
+      testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`,
+    cause: testCause,
+  });
 
   t.throws(() => parseErrors(testError, { strict: true }));
 
@@ -120,7 +120,7 @@ test('when causal headers are present in stack', (t) => {
 });
 
 test('cleans a causal chain of errors', (t) => {
-  t.deepEqual(cleanErrors(parseErrors(testError)), [
+  t.deepEqual(cleanErrors(parseErrors(makeTestErrors())), [
     {
       name: testErrorName,
       message: testErrorMessage,
@@ -141,5 +141,5 @@ test('can print an error', (t) => {
 });
 
 test('can print a causal chain of errors', (t) => {
-  t.is(printErrors(testError), `${testErrorStack}\nCaused by: ${testCauseStack}`);
+  t.is(printErrors(makeTestErrors()), `${testErrorStack}\nCaused by: ${testCauseStack}`);
 });

@@ -12,9 +12,11 @@ const testErrorFrameStrs = [fileFooFrameStr, nativeFrameStr];
 const testErrorFramesStr = testErrorFrameStrs.join('\n');
 const testErrorStack = `${testErrorHeader}\n${testErrorFramesStr}`;
 
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
+const makeTestError = ({ message = testErrorMessage, stack = testErrorStack } = {}) => {
+  const testError = new TestError(message);
+  testError.stack = stack;
+  return testError;
+};
 
 module.exports = {
   ...base,
@@ -26,5 +28,5 @@ module.exports = {
   testErrorFrameStrs,
   testErrorFramesStr,
   testErrorStack,
-  testError,
+  makeTestError,
 };

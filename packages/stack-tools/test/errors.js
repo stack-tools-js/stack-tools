@@ -13,15 +13,15 @@ const {
   testErrorHeader,
   testErrorFrames,
   testErrorStack,
-  testError,
+  makeTestErrors,
 } = require('../../../test/fixtures/errors.js');
 
 test('can get errors', (t) => {
-  t.deepEqual(getErrors(testError), [testError, testCause]);
+  t.deepEqual(getErrors(makeTestErrors()), [makeTestErrors(), testCause]);
 });
 
 test('can parse a chain of error', (t) => {
-  t.deepEqual(parseErrors(testError), [
+  t.deepEqual(parseErrors(makeTestErrors()), [
     {
       name: testErrorName,
       message: testErrorMessage,
@@ -40,12 +40,12 @@ test('can parse a chain of error', (t) => {
 
 test('can print a chain of error headers', (t) => {
   const expected = `${testErrorHeader}\nCaused by: ${testCauseHeader}`;
-  t.is(printErrorHeaders(testError), expected);
-  t.is(printErrorHeaders(parseErrors(testError)), expected);
+  t.is(printErrorHeaders(makeTestErrors()), expected);
+  t.is(printErrorHeaders(parseErrors(makeTestErrors())), expected);
 });
 
 test('can print a chain of errors', (t) => {
   const expected = `${testErrorStack}\nCaused by: ${testCauseStack}`;
-  t.is(printErrors(testError), expected);
-  t.is(printErrors(parseErrors(testError)), expected);
+  t.is(printErrors(makeTestErrors()), expected);
+  t.is(printErrors(parseErrors(makeTestErrors())), expected);
 });
