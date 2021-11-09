@@ -1,0 +1,39 @@
+{
+  "name": "stack-tools",
+  "version": "1.0.0",
+  "description": "Utilites for printing and parsing errors and their stacks",
+  "license": "MIT",
+  "repository": {
+    "type": "github",
+    "url": "stack-tools-js/stack-tools",
+    "directory": "packages/stack-tools"
+  },
+  "main": "lib/index.js",
+  "files": [
+    "lib/*"
+  ],
+  "author": {
+    "name": "Conrad Buck",
+    "email": "conartist6@gmail.com",
+    "url": "https://github.com/conartist6"
+  },
+  "scripts": {
+    "test": "run-s test:types test:js",
+    "test:js": "ava",
+    "test:js:coverage": "c8 ava",
+    "test:types": "tsc",
+    "prepare": "husky install",
+    "verify": "run-s test:types test:js:coverage"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --quiet"
+    ],
+    "*.{js,md,json}": [
+      "prettier -c"
+    ]
+  },
+  "dependencies": {
+    "iserror": "0.0.2"
+  }
+}

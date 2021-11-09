@@ -1,3 +1,3 @@
 module.exports = {
-  files: ['test/**/*', '!**/fixtures/**/*'],
+  files: ['test/**/*', 'packages/*/test/**/*', '!**/fixtures/**/*'],
 };
