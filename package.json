@@ -10,7 +10,14 @@
     "email": "conartist6@gmail.com",
     "url": "https://github.com/conartist6"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "run-s test:types test:js",
+    "test:js": "ava",
+    "test:js:coverage": "c8 ava",
+    "test:types": "tsc",
+    "prepare": "husky install",
+    "verify": "run-s test:types test:js:coverage"
+  },
   "lint-staged": {
     "*.js": [
       "eslint --quiet"

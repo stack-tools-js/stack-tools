@@ -17,24 +17,6 @@
     "email": "conartist6@gmail.com",
     "url": "https://github.com/conartist6"
   },
-  "scripts": {
-    "build": "run-s build:nearley",
-    "build:nearley": "cd lib/internal/nearley && nearleyc error.ne -o error.js && nearleyc frame.ne -o frame.js && nearleyc frame-strict.ne -o frame-strict.js",
-    "test": "run-s test:types test:js",
-    "test:js": "ava",
-    "test:js:coverage": "c8 ava",
-    "test:types": "tsc",
-    "prepare": "husky install",
-    "verify": "run-s test:types test:js:coverage"
-  },
-  "lint-staged": {
-    "*.js": [
-      "eslint --quiet"
-    ],
-    "*.{js,md,json}": [
-      "prettier -c"
-    ]
-  },
   "dependencies": {
     "stack-tools": "1.0.0",
     "iserror": "0.0.2",
