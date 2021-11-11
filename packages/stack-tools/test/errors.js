@@ -1,47 +1,32 @@
 const test = require('ava');
 
-const { getErrors, parseErrors, printErrorHeaders, printErrors } = require('stack-tools');
+const { getErrorChain, parseErrors, printErrors } = require('stack-tools');
 const {
-  testCauseName,
-  testCauseMessage,
   testCauseHeader,
-  testCauseFrames,
   testCauseStack,
-  testCause,
-  testErrorName,
-  testErrorMessage,
+  testCauseNode,
+  makeTestCause,
   testErrorHeader,
-  testErrorFrames,
   testErrorStack,
+  testErrorNode,
   makeTestErrors,
 } = require('../../../test/fixtures/errors.js');
 
 test('can get errors', (t) => {
-  t.deepEqual(getErrors(makeTestErrors()), [makeTestErrors(), testCause]);
+  t.deepEqual(getErrorChain(makeTestErrors()), [makeTestErrors(), makeTestCause()]);
 });
 
 test('can parse a chain of error', (t) => {
-  t.deepEqual(parseErrors(makeTestErrors()), [
-    {
-      name: testErrorName,
-      message: testErrorMessage,
-      frames: testErrorFrames,
-    },
-    {
-      name: testCauseName,
-      message: testCauseMessage,
-      frames: testCauseFrames,
-    },
-  ]);
+  t.deepEqual(parseErrors(makeTestErrors()), [testErrorNode, testCauseNode]);
 
   // We can't parse this because we have no idea what the syntax of stack frames is
   t.throws(() => parseErrors('Error: Message'));
 });
 
-test('can print a chain of error headers', (t) => {
+test('can print a chain of errors without frames', (t) => {
   const expected = `${testErrorHeader}\nCaused by: ${testCauseHeader}`;
-  t.is(printErrorHeaders(makeTestErrors()), expected);
-  t.is(printErrorHeaders(parseErrors(makeTestErrors())), expected);
+  t.is(printErrors(makeTestErrors(), { frames: false }), expected);
+  t.is(printErrors(parseErrors(makeTestErrors()), { frames: false }), expected);
 });
 
 test('can print a chain of errors', (t) => {

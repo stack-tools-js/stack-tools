@@ -8,16 +8,12 @@ const {
   nativeFrame,
   fileFooFrame,
   fileBarFrame,
-  testCauseName,
-  testCauseMessage,
-  testCauseFrames,
+  testCauseHeader,
   testCauseStack,
-  testCause,
-  testErrorName,
-  testErrorMessage,
+  testCauseNode,
   testErrorHeader,
   testErrorStack,
-  testErrorFrames,
+  testErrorNode,
   makeTestErrors,
 } = require('./fixtures/errors.js');
 
@@ -39,24 +35,33 @@ test('can reprint a string error', (t) => {
 
   t.deepEqual(parsed, [
     {
-      name: 'ReferenceError',
-      message: 'a is not defined',
+      type: 'Error',
+      name: { type: 'ErrorName', name: 'ReferenceError' },
+      message: { type: 'ErrorMessage', message: 'a is not defined' },
       frames,
+      prefix: undefined,
     },
     {
-      name: '',
-      message: '',
+      type: 'Error',
+      name: undefined,
+      message: undefined,
       frames,
       prefix: 'From previous event',
     },
     {
-      name: 'ZargothError',
-      message: '',
+      type: 'Error',
+      name: { type: 'ErrorName', name: 'ZargothError' },
+      message: undefined,
       frames,
+      prefix: undefined,
     },
     {
-      name: 'OriginalError',
-      message: 'Where it all began!\n    And sometimes there is more text',
+      type: 'Error',
+      name: { type: 'ErrorName', name: 'OriginalError' },
+      message: {
+        type: 'ErrorMessage',
+        message: 'Where it all began!\n    And sometimes there is more text',
+      },
       frames,
       prefix: 'And even before that there was',
     },
@@ -72,21 +77,26 @@ test('can reprint a string error', (t) => {
         at native`;
 
   t.throws(() => parseErrors(badStack));
+
+  t.throws(() => parseErrors(4));
 });
 
-test('can parse a causal chain of errors', (t) => {
-  t.deepEqual(parseErrors(makeTestErrors()), [
-    {
-      name: testErrorName,
-      message: testErrorMessage,
-      frames: testErrorFrames,
-    },
-    {
-      name: testCauseName,
-      message: testCauseMessage,
-      frames: testCauseFrames,
-    },
-  ]);
+test('can print an error chain', (t) => {
+  t.is(printErrors(makeTestErrors()), `${testErrorStack}\nCaused by: ${testCauseStack}`);
+  t.is(
+    printErrors(makeTestErrors(), { strict: true }),
+    `${testErrorStack}\nCaused by: ${testCauseStack}`,
+  );
+  t.is(
+    printErrors(makeTestErrors(), { frames: false }),
+    `${testErrorHeader}\nCaused by: ${testCauseHeader}`,
+  );
+
+  t.throws(() => printErrors(22));
+});
+
+test('can parse a chain of errors', (t) => {
+  t.deepEqual(parseErrors(makeTestErrors()), [testErrorNode, testCauseNode]);
 });
 
 test('when causal headers are present in stack', (t) => {
@@ -95,51 +105,42 @@ test('when causal headers are present in stack', (t) => {
   const testError = makeTestErrors({
     stack:
       testErrorStack + `\nCaused by: ${looseErrorName}: ${looseErrorMessage}\n${nativeFrameStr}`,
-    cause: testCause,
   });
 
   t.throws(() => parseErrors(testError, { strict: true }));
 
   t.deepEqual(parseErrors(testError), [
+    testErrorNode,
     {
-      name: testErrorName,
-      message: testErrorMessage,
-      frames: testErrorFrames,
-    },
-    {
-      name: looseErrorName,
-      message: looseErrorMessage,
+      type: 'Error',
+      name: { type: 'ErrorName', name: looseErrorName },
+      message: { type: 'ErrorMessage', message: looseErrorMessage },
       frames: [nativeFrame],
+      prefix: undefined,
     },
-    {
-      name: testCauseName,
-      message: testCauseMessage,
-      frames: testCauseFrames,
-    },
+    testCauseNode,
   ]);
 });
 
-test('cleans a causal chain of errors', (t) => {
+test('cleans a chain of errors', (t) => {
   t.deepEqual(cleanErrors(parseErrors(makeTestErrors())), [
     {
-      name: testErrorName,
-      message: testErrorMessage,
+      ...testErrorNode,
       frames: [fileFooFrame],
     },
     {
-      name: testCauseName,
-      message: testCauseMessage,
+      ...testCauseNode,
       frames: [fileBarFrame],
     },
   ]);
 });
 
-test('can print an error', (t) => {
-  const headerError = { name: testErrorName, message: testErrorMessage };
-  t.is(printErrors([headerError]), testErrorHeader);
-  t.is(printErrors([{ ...headerError, prefix: 'Id est' }]), testErrorHeader);
-});
+test('can print a chain of errors', (t) => {
+  t.is(
+    printErrors([testErrorNode, testCauseNode]),
+    `${testErrorStack}\nCaused by: ${testCauseStack}`,
+  );
 
-test('can print a causal chain of errors', (t) => {
-  t.is(printErrors(makeTestErrors()), `${testErrorStack}\nCaused by: ${testCauseStack}`);
+  t.is(printErrors([{ ...testErrorNode, frames: undefined }]), testErrorHeader);
+  t.is(printErrors([{ ...testErrorNode, frames: undefined, prefix: 'Id est' }]), testErrorHeader);
 });

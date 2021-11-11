@@ -1,6 +1,12 @@
 @{%
 const { stringFrom, get } = require('./util.js');
-const { lexer, buildFrame, buildCallSite, buildCall, buildFileSite } = require('../frame-shared.js');
+const { lexer,
+  buildFrame,
+  buildEvalFrame,
+  buildCallSite,
+  buildCall,
+  buildLocator,
+} = require('../frame-shared.js');
 %}
 
 @lexer lexer
@@ -12,10 +18,10 @@ Frame ->
   _ "at" __ (
     # evalOrigin (eval at evalmethod (file.js:1:23), <anonymous>:1:5)
     FunctionName _ "(" _ "eval" __ "at" __ CallSite _ ( "," _ Site ):? _ ")"
-      {% (d) => buildFrame(d[0], get(d, 10, 2), d[8]) %}
-    | CallSite {% id %}
+      {% (d) => buildEvalFrame(d[0], get(d, 10, 2), d[8]) %}
+    | CallSite {% (d) => buildFrame(d[0]) %}
     # stack-tools prints this when all frames are cleaned to avoid merging messages
-    | "<" "omitted" ">" {% (d) => buildCallSite(null, { type: "omitted" }) %}
+    | "<" "omitted" ">" {% (d) => ({ type: 'OmittedFrame' }) %}
   ) _ {% (d) => d[3] %}
 
 # file.js:1:23
@@ -24,9 +30,9 @@ CallSite ->
   Call __ "(" _ Site _ ")"
   {% (d) => buildCallSite(d[0], d[4]) %}
   | Call __ "(" _ "index" __ Number _ ")"
-  {% (d) => buildCallSite(d[0], { type: "index", index: d[6] }) %}
+  {% (d) => buildCallSite(d[0], { type: "IndexSite", index: d[6] }) %}
   | Site
-  {% (d) => buildCallSite(null, d[0]) %}
+  {% (d) => buildCallSite(undefined, d[0]) %}
 
 # foo
 # async foo
@@ -42,20 +48,26 @@ Modifier ->
 
 # file.js:1:23
 Site ->
-  Path _ ":" _ Number _ ":" _ Number
-  {% (d) => ({ ...d[0], line: d[4], column: d[8] }) %}
+  Locator _ Position
+  {% (d) => ({ type: "FileSite", locator: d[0], position: d[2] }) %}
   # Allow ourselves to require position when path is not anonymous
   | "<" "anonymous" ">"
-  {% () => ({ type: "anonymous" }) %}
+  {% () => ({ type: "AnonymousSite" }) %}
   | "native"
-  {% () => ({ type: "native" }) %}
+  {% () => ({ type: "NativeSite" }) %}
+
+# :1:23
+Position -> ":" _ Number _ ":" _ Number
+  {% (d) => ({ type: 'Position', line: d[2], column: d[6] }) %}
 
 # [as methodName]
 AsMethod -> "[" "as" __ FunctionName "]" {% (d) => d[3] %}
 
-Path ->
-  PathFragment SpacePathFragment:* {% (d) => buildFileSite(d[0] + stringFrom(d[1])) %}
-  | "<" "anonymous" ">" {% () => ({ type: "anonymous" }) %}
+# file.js
+# https://site.tld/file.js
+Locator ->
+  PathFragment SpacePathFragment:* {% (d) => buildLocator(d[0] + stringFrom(d[1])) %}
+  | "<" "anonymous" ">" {% () => ({ type: "AnonymousLocator" }) %}
 
 # Ensure that path never begins or ends with spaces.
 SpacePathFragment -> SP:? PathFragment {% (d) => (d[0] || '') + d[1] %}

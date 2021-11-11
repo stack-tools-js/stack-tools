@@ -15,16 +15,24 @@ const lexer = moo.compile({
   Fragment: /[^()<>[\]: \d\t\n]+/,
 });
 
-const buildFrame = (evalOrigin, site, eval_) => {
+const buildFrame = (callSite) => {
+  return { type: 'CallSiteFrame', callSite };
+};
+
+const buildEvalFrame = (evalOrigin, site, eval_) => {
   return {
-    call: {
-      constructor: false,
-      async: false,
-      function: evalOrigin,
-      method: evalOrigin,
+    type: 'EvalFrame',
+    callSite: {
+      call: {
+        type: 'Call',
+        constructor: false,
+        async: false,
+        function: evalOrigin,
+        method: evalOrigin,
+      },
+      site,
     },
-    site,
-    eval: eval_,
+    evalCallSite: eval_,
   };
 };
 
@@ -32,6 +40,7 @@ const buildCallSite = (call, site) => ({ call, site });
 
 const buildCall = (kw, fn, method = fn) => {
   return {
+    type: 'Call',
     constructor: kw === 'new',
     async: kw === 'async',
     function: fn,
@@ -39,17 +48,24 @@ const buildCall = (kw, fn, method = fn) => {
   };
 };
 
-const buildFileSite = (pathOrUri) => {
+const buildLocator = (pathOrUri) => {
   const URImatch = URIexp.exec(pathOrUri);
   if (URImatch) {
     const uri = encodeURI(pathOrUri);
     const cnIdx = uri.indexOf(':');
     const scheme = uri.slice(0, cnIdx);
     const path = uri.slice(cnIdx + 3);
-    return { type: 'uri', scheme, path };
+    return { type: 'URILocator', scheme, path };
   } else {
-    return { type: 'path', path: pathOrUri };
+    return { type: 'PathLocator', path: pathOrUri };
   }
 };
 
-module.exports = { lexer, buildFrame, buildCallSite, buildCall, buildFileSite };
+module.exports = {
+  lexer,
+  buildFrame,
+  buildEvalFrame,
+  buildCallSite,
+  buildCall,
+  buildLocator,
+};

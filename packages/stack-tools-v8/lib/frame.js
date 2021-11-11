@@ -3,6 +3,7 @@ const { Grammar } = require('nearley');
 const { parseFrameStrict } = require('./internal/frame-strict.js');
 const { parse } = require('./internal/nearley/util.js');
 const CompiledFrameGrammar = require('./internal/nearley/frame.js');
+const { visit } = require('./visit.js');
 
 const FrameGrammar = Grammar.fromCompiled(CompiledFrameGrammar);
 
@@ -23,26 +24,33 @@ const isBalanced = (str) => {
   return parens === 0;
 };
 
-function scoreCallSite(callSite, p) {
+function scoreCallSite(callSite, p = 0) {
   const { call, site } = callSite;
 
-  let score = 0;
   // Use powers of two to ensure that scores are unambiguous
+  let score = 0;
 
   if (call) {
-    score += 2 ^ (p + 6);
+    score += 2 ^ (p + 7);
 
     const { constructor, method, function: function_ } = call;
 
-    if (constructor) score += 2 ^ (p + 5);
-    if (method !== function_) score += 2 ^ (p + 4);
-    if (function_) score += 2 ^ (p + 3);
-    if (isBalanced(function_)) score += 2 ^ (p + 2);
+    if (constructor) score += 2 ^ (p + 6);
+    if (method !== function_) score += 2 ^ (p + 5);
+    if (function_) score += 2 ^ (p + 4);
+    if (isBalanced(function_)) score += 2 ^ (p + 3);
   }
 
-  if (site && site.type !== 'path' && site.type !== 'uri') score += 2 ^ (p + 1);
-  if (site && (site.type === 'path' || site.type === 'uri') && isBalanced(site.path)) {
-    score += 2 ^ p;
+  if (site) {
+    if (site.type !== 'FileSite') {
+      score += 2 ^ (p + 2);
+    } else {
+      if (site.locator.type === 'AnonymousLocator') {
+        score += 2 ^ (p + 1);
+      } else if (isBalanced(site.locator.path)) {
+        score += 2 ^ p;
+      }
+    }
   }
   return score;
 }
@@ -51,29 +59,27 @@ function parseFrame(str) {
   try {
     return parseFrameStrict(str);
   } catch (e) {
-    // The ambiguous grammar is more powerful, and may be able to parse this
+    // The ambiguous grammar is more powerful, but returns multiple interpretations
+    const frames = parse(FrameGrammar, str);
 
-    const results = parse(FrameGrammar, str);
-
-    // The frame grammar is fundamentally ambiguous
-    // We must make some decisions about what is most likely to be correct
+    // Therefore we must make some decisions about what is most likely to be correct
     let best = null;
     let bestScore = -1;
-    for (const result of results) {
-      const { eval: eval_ } = result;
+    let score = 0;
 
-      let score = 0;
-      // Use powers of two to ensure that scores are unambiguous
-
-      // TODO repeat these checks on eval
-      if (eval_) {
-        score += scoreCallSite(eval_, 7);
+    for (const frame of frames) {
+      switch (frame.type) {
+        case 'CallSiteFrame':
+          score = scoreCallSite(frame.callSite);
+          break;
+        case 'EvalFrame':
+          score = scoreCallSite(frame.callSite) + scoreCallSite(frame.evalCallSite, 8);
+          break;
       }
-      score += scoreCallSite(result, 0);
 
       if (score > bestScore) {
         bestScore = score;
-        best = result;
+        best = frame;
       }
     }
 
@@ -81,84 +87,13 @@ function parseFrame(str) {
   }
 }
 
-function printCall(call) {
-  const parts = [];
-
-  if (call.async) parts.push('async');
-  if (call.constructor) parts.push('new');
-  parts.push(call.function);
-  if (call.method !== call.function) parts.push(`[as ${call.method}]`);
-
-  return parts.join(' ');
-}
-
-function printSite(site) {
-  let str = '';
-  switch (site.type) {
-    case 'anonymous':
-      str += '<anonymous>';
-      if (site.line && site.column) {
-        str += `:${site.line}:${site.column}`;
-      }
-      break;
-    case 'native':
-      str += 'native';
-      break;
-    case 'path':
-      str += `${site.path}:${site.line}:${site.column}`;
-      break;
-    case 'uri': {
-      const file = decodeURI(`${site.scheme}://${site.path}`);
-      str += `${file}:${site.line}:${site.column}`;
-      break;
-    }
-    case 'index':
-      str += `index ${site.index}`;
-      break;
-  }
-
-  return str;
-}
-
-function printCallSite(callSite) {
-  const { call, site } = callSite;
-  const parts = [];
-
-  if (call) parts.push(printCall(call));
-  if (site) parts.push(call ? `(${printSite(site)})` : printSite(site));
-
-  return parts.join(' ');
-}
-
-function printEval(callSite, evalCallSite) {
-  let str = '';
-
-  str += callSite.call.function;
-
-  str += ' (';
-
-  str += `eval at ${printCallSite(evalCallSite)}`;
-
-  if (callSite.site) str += `, ${printSite(callSite.site)}`;
-
-  str += ')';
-
-  return str;
-}
-
 function printFrame(frame) {
-  if (typeof frame === 'string') return frame;
-
-  if (frame.call === null && frame.site.type === 'omitted') {
-    return `    at <omitted>`;
-  }
-
-  return `    at ${frame.eval ? printEval(frame, frame.eval) : printCallSite(frame)}`;
+  return visit(frame);
 }
 
 function isInternalFrame(frame) {
-  const siteType = frame.site.type;
-  return siteType === 'native' || siteType === 'index';
+  const siteType = frame.callSite.site.type;
+  return siteType === 'NativeSite' || siteType === 'IndexSite';
 }
 
 module.exports = { parseFrame, printFrame, isInternalFrame };

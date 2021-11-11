@@ -1,8 +1,11 @@
 const isError = require('iserror');
 
-const { parseError, printError, printErrorHeader } = require('./error.js');
+const { parseError, printError } = require('./error.js');
+const { visit } = require('./visit.js');
 
-function getErrors(error) {
+const { isArray } = Array;
+
+function getErrorChain(error) {
   const errors = [];
   for (let cause = error; cause; cause = cause.cause) {
     errors.push(cause);
@@ -10,41 +13,29 @@ function getErrors(error) {
   return errors;
 }
 
-function parseErrors(errors) {
+function parseErrors(errors, options = {}) {
   if (isError(errors)) {
-    return getErrors(errors).map((error) => parseError(error));
+    return getErrorChain(errors).map((error) => parseError(error, options));
+  } else if (isArray(errors)) {
+    return errors.map((error) => parseError(error, options));
   } else {
-    throw new Error('error argument to parseError must be an Error');
+    throw new Error(
+      'errors argument to parseError must be an Error, an array of Error, or parseError(errors)',
+    );
   }
 }
 
-function __printErrorHeaders(errors) {
-  let str = '';
-  for (let i = 0; i < errors.length; i++) {
-    if (i > 0) str += '\nCaused by: ';
-
-    str += printErrorHeader(errors[i]);
+function printErrors(errors, options = {}) {
+  if (isError(errors)) {
+    return (
+      getErrorChain(errors)
+        // avoid calling parseError -- printError can return error.stack much of the time
+        .map((error) => printError(error, options))
+        .join('\nCaused by: ')
+    );
+  } else {
+    return visit.ErrorChain(parseErrors(errors, options), visit);
   }
-  return str;
 }
 
-function printErrorHeaders(errors) {
-  return __printErrorHeaders(isError(errors) ? getErrors(errors) : errors);
-}
-
-function __printErrors(errors) {
-  let str = '';
-  for (let i = 0; i < errors.length; i++) {
-    const error = errors[i];
-    if (i > 0) str += '\nCaused by: ';
-
-    str += printError(error);
-  }
-  return str;
-}
-
-function printErrors(errors) {
-  return __printErrors(isError(errors) ? parseErrors(errors) : errors);
-}
-
-module.exports = { getErrors, parseErrors, printErrorHeaders, printErrors };
+module.exports = { getErrorChain, parseErrors, printErrors };

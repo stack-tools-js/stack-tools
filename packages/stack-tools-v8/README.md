@@ -36,67 +36,15 @@ try {
 
 ## API
 
-The api for `node-tools` extends from the [stack-tools API](https://github.com/stack-tools-js/stack-tools/packages/stack-tools#API). It is capable of more robust parsing though, and can even parse error strings, i.e. `parseError(err.stack)`, which the base `stack-tool` cannot. Furthermore it provides the most detailed output it can, specifically offering a `Frame` data structure with details about the content of each frame. Here are the types used in the API:
-
-```ts
-type ParsedError = {
-  name: string;
-  message: string;
-  frames: Array<Frame>;
-  prefix: string; // 'Caused by' or other similar text
-};
-
-type Frame = {
-  call: Call | null;
-  site: Site;
-  eval: {
-    call: Call | null;
-    site: Site;
-  };
-};
-
-type Call = {
-  async: boolean;
-  constructor: boolean;
-  function: string;
-  method: string;
-};
-
-type Site =
-  | {
-      type: 'anonymous';
-      column?: number;
-      line?: number;
-    }
-  | {
-      type: 'native';
-    }
-  | {
-      type: 'path';
-      path: string;
-      column: number;
-      line: number;
-    }
-  | {
-      type: 'uri';
-      scheme: string;
-      path: string;
-      column: number;
-      line: number;
-    }
-  | {
-      type: 'index';
-      index: number;
-    };
-```
+The api for `node-tools` extends from the [stack-tools API](https://github.com/stack-tools-js/stack-tools/packages/stack-tools#API). It is capable of more robust parsing though, and can even parse error strings, i.e. `parseError(err.stack)`, which the base `stack-tools` cannot. Furthermore it provides the most detailed output it can, specifically offering a `FrameNode` describing content of each frame. When parsing `ErrorNode.frames` will be an `Array<FrameNode>`. For details of the AST structure please read [ast.d.ts](https://github.com/stack-tools-js/stack-tools/packages/stack-tools-v8/lib/ast.d.ts).
 
 `v8-tools` overrides the implementations of some methods from the `stack-tools` API to provide support for custom chaining prefixes. Custom prefixes are usually the result of user tampering with `error.stack`, such as is done by [nested-error-stacks](https://www.npmjs.com/package/nested-error-stacks).
 
-- `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\n${error.prefix}: ${printErrorHeaders(error.cause)}` ``
 - `printErrors(error)` returns `` `${printError(error)}\n${error.prefix}: ${printErrors(error.cause)}` ``
 
 `v8-tools` also defines the following additional methods:
 
+- `parseFrame(frame)` returns a `FrameNode`
 - `isInternalFrame(frame)` returns `true` if frame represents a location internal to the v8 runtime.
 - `cleanError(error, predicate = isInternalFrame)` mutates `error.stack`, filtering out internal frames. Returns `error`.
 - `cleanErrors(errors, predicate = isInternalFrame)` for each error mutates `error.stack`, filtering out internal frames. Returns `errors`.

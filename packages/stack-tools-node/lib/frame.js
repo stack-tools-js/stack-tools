@@ -19,10 +19,12 @@ const natives = [
 ];
 
 function isInternalFrame(frame) {
-  const { site } = frame;
+  const { site } = frame.callSite;
   return (
     isInternalFrameV8(frame) ||
-    (site.type === 'path' && natives.some((regex) => regex.test(site.path)))
+    (site.type === 'FileSite' &&
+      site.locator.type !== 'AnonymousLocator' &&
+      natives.some((regex) => regex.test(site.locator.path)))
   );
 }
 

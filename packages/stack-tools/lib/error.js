@@ -1,75 +1,90 @@
 const isError = require('iserror');
 
+const { isNode, visit } = require('./visit.js');
+
 // Stolen from escape-string-regexp © sindresorhus
 // It was easier to copy the code than transpile to cjs inside node_modules
 function escapeRegex(string) {
   return string.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d');
 }
 
-function parseError(error) {
+function parseError(error, options = {}) {
+  const { frames = true } = options;
+
   if (isError(error)) {
     const { name, displayName, message, stack } = error;
 
-    const names = [name, 'Error'];
-    // Some older browsers print displayName instead of name
-    if (displayName) names.push(displayName);
-
-    const headerExp = new RegExp(
-      `(?:${names.map((n) => escapeRegex(n)).join('|')}): ${escapeRegex(message)}\n`,
-    );
+    const node = {
+      type: 'Error',
+      name: { type: 'ErrorName', name },
+      message: { type: 'ErrorMessage', message },
+      frames: undefined,
+    };
 
     if (stack) {
-      const headerMatch = headerExp.exec(stack);
-      if (headerMatch) {
-        return {
-          name,
-          message,
-          frames: stack.slice(headerMatch[0].length).split('\n'),
-        };
+      const names = [name, 'Error'];
+      // Some older browsers print displayName instead of name
+      if (displayName) names.push(displayName);
+
+      const nameExp = new RegExp(`^(${names.map((n) => escapeRegex(n)).join('|')}):`);
+      const nameMatch = nameExp.exec(stack);
+
+      if (nameMatch) {
+        const stackName = nameMatch[1];
+        node.name.name = stackName;
+
+        if (frames) {
+          const headerExp = new RegExp(`^${escapeRegex(stackName)}: ${escapeRegex(message)}\n`);
+          const headerMatch = headerExp.exec(stack);
+
+          if (headerMatch) {
+            node.frames = stack
+              .slice(headerMatch[0].length)
+              .split('\n')
+              .map((text) => ({
+                type: 'TextFrame',
+                text,
+              }));
+          }
+        }
       }
     }
-    return { name, message };
+    return node;
+  } else if (isNode(error)) {
+    return frames ? error : { ...error, frames: undefined };
   } else {
-    throw new Error('error argument to parseError must be an Error');
+    throw new Error('error argument to parseError must be an Error or parseError(Error)');
   }
 }
 
 function replaceMessage(error, message) {
-  const { name } = error;
-  const message_ = typeof message === 'function' ? message(error.message) : message;
-  if (error.stack) {
-    const oldHeader = printErrorHeader(error);
-    error.stack =
-      printErrorHeader({ name, message: message_ }) +
-      error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
+  if (isError(error)) {
+    const message_ = typeof message === 'function' ? message(error.message) : message;
+    if (error.stack) {
+      const parsedError = parseError(error, { frames: false });
+      const oldHeader = printError(parsedError);
+      error.stack =
+        printError(
+          Object.assign({}, parsedError, {
+            message: Object.assign({}, parsedError.message, { message: message_ }),
+          }),
+        ) + error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
+    }
+    error.message = message_;
+
+    return error;
+  } else {
+    throw new Error('error argument to replaceMessage must be an Error');
   }
-  error.message = message_;
-
-  return error;
 }
 
-function printErrorHeader(error) {
-  const { name, message } = error;
-  return name && message ? `${name}: ${message}` : message ? `Error: ${message}` : name || 'Error';
+function printError(error, options = {}) {
+  const { frames = true } = options;
+  if (isError(error) && error.stack && frames) {
+    return error.stack;
+  } else {
+    return visit(parseError(error, options));
+  }
 }
 
-function __printFrames(error) {
-  return error.frames.join('\n');
-}
-
-function printFrames(error) {
-  return __printFrames(isError(error) ? parseError(error) : error);
-}
-
-function __printError(error) {
-  const { frames } = error;
-  const header = printErrorHeader(error);
-
-  return frames && frames.length ? `${header}\n${frames.join('\n')}` : header;
-}
-
-function printError(error) {
-  return __printError(isError(error) ? parseError(error) : error);
-}
-
-module.exports = { parseError, replaceMessage, printErrorHeader, printFrames, printError };
+module.exports = { parseError, replaceMessage, printError };

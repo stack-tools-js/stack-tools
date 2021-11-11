@@ -1,25 +1,32 @@
-const {
-  TestError,
-  testErrorName,
-  testErrorMessage,
-  testErrorHeader,
-  testErrorFrames,
-  testErrorStack,
-} = require('./error.js');
+const error = require('./error.js');
+
+const { TestError, testErrorMessage, testErrorStack } = error;
+
+const nativeTextFrame = { type: 'TextFrame', text: `    at native` };
 
 const testCauseName = 'Error';
 const testCauseMessage = 'the system is down';
 const testCauseHeader = `${testCauseName}: ${testCauseMessage}`;
-const testCauseFrames = [`    at native`];
-const testCauseStack = `${testCauseHeader}\n${testCauseFrames.join('\n')}`;
-const testCause = new Error(testCauseMessage);
+const testCauseFrames = [nativeTextFrame];
+const testCauseFrameStrs = testCauseFrames.map((frame) => frame.text);
+const testCauseStack = `${testCauseHeader}\n${testCauseFrameStrs.join('\n')}`;
+const testCauseNode = {
+  type: 'Error',
+  name: { type: 'ErrorName', name: testCauseName },
+  message: { type: 'ErrorMessage', message: testCauseMessage },
+  frames: testCauseFrames,
+};
 
-testCause.stack = testCauseStack;
+const makeTestCause = ({ message = testCauseMessage, stack = testCauseStack } = {}) => {
+  const testCause = new Error(message);
+  testCause.stack = stack;
+  return testCause;
+};
 
 const makeTestErrors = ({
   message = testErrorMessage,
   stack = testErrorStack,
-  cause = testCause,
+  cause = makeTestCause(),
 } = {}) => {
   const testError = new TestError(message);
   testError.stack = stack;
@@ -28,17 +35,15 @@ const makeTestErrors = ({
 };
 
 module.exports = {
-  TestError,
+  ...error,
+  nativeTextFrame,
   testCauseName,
   testCauseMessage,
   testCauseHeader,
   testCauseFrames,
+  testCauseFrameStrs,
   testCauseStack,
-  testCause,
-  testErrorName,
-  testErrorMessage,
-  testErrorHeader,
-  testErrorFrames,
-  testErrorStack,
+  testCauseNode,
+  makeTestCause,
   makeTestErrors,
 };

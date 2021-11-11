@@ -5,23 +5,19 @@ const { parseErrors, cleanErrors } = require('@stack-tools/node-tools');
 const {
   fileFooFrame,
   fileBarFrame,
-  testCauseName,
-  testCauseMessage,
-  testErrorName,
-  testErrorMessage,
-  testError,
+  testErrorNode,
+  testCauseNode,
+  makeTestErrors,
 } = require('./fixtures/errors.js');
 
 test('cleans a causal chain of errors', (t) => {
-  t.deepEqual(cleanErrors(parseErrors(testError)), [
+  t.deepEqual(cleanErrors(parseErrors(makeTestErrors())), [
     {
-      name: testErrorName,
-      message: testErrorMessage,
+      ...testErrorNode,
       frames: [fileFooFrame],
     },
     {
-      name: testCauseName,
-      message: testCauseMessage,
+      ...testCauseNode,
       frames: [fileBarFrame],
     },
   ]);

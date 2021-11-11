@@ -57,24 +57,17 @@ try {
 
 ## API
 
-Utilities that work with stacks from any environment are in the `stack-tools` module, otherwise known as the base module. Parameters called `error` (other than `parseError(error)`) accept either an instance of `Error` (or one of its subtypes) or a `ParsedError` as returned by `parseError(error)`, which is defined as:
-
-```ts
-type ParsedError {
-  name: string;
-  message: string;
-  frames: Array<string>;
-}
-```
+Utilities that work with stacks from any environment are in the `stack-tools` module, otherwise known as the base module.
 
 The following methods are provided:
 
-- `getErrors(error)` returns an array of causally related errors, e.g. `[error, error.cause, error.cause.cause]`,
-- `parseError(error)` returns `` { name, message, frames: Array<string>}` ``.
 - `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`. `message` may also be a `message => newMessage` callback.
-- `parseErrors(errors)` returns an array of parsed errors
-- `printFrames(error)` returns the frames of `error.stack` as a string, omitting the header text.
-- `printErrorHeader(error)` returns `` `${name}: ${message}` ``
-- `printErrorHeaders(error)` returns `` `${printErrorHeader(error)}\nCaused by: ${printErrorHeaders(error.cause)}` ``
-- `printError(error)` returns `` `${printHeader(errror)}\n${error.stack}` ``
-- `printErrors(error)` returns `` `${printError(error)}\nCaused by: ${printErrors(error.cause)}` ``
+- `getErrorChain(error)` returns an array of causally chained errors, e.g. `[error, error.cause, error.cause.cause]`,
+- `parseError(error, ?options)` returns an error AST node. For more info see the [AST docs](https://github.com/stack-tools-js/stack-tools/packages/stack-tools/lib/ast.d.ts).
+- `parseErrors(errors, ?options)` returns an array of error AST nodes.
+- `printError(error, ?options)` returns `` `${printHeader(errror)}\n${error.stack}` ``
+- `printErrors(error, ?options)` returns `` `${printError(error)}\nCaused by: ${printErrors(error.cause)}` ``
+
+The following options are provided:
+
+- `options.frames` (default: `true`) indicates whether frame data should be parsed or printed. For parse methods `frames: false` will cause `error.frames` to be `undefined`. For print methods frames will not be printed even if they are present in an argument AST.
