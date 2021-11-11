@@ -8,17 +8,29 @@ const {
   testErrorHeader,
 } = base;
 
-const fsFrame = { call: null, site: { type: 'path', path: 'node:fs', line: 1, column: 1 } };
-const fsFrameStr = 'at node:fs:1:1';
+const fsFrame = {
+  type: 'CallSiteFrame',
+  callSite: {
+    call: undefined,
+    site: {
+      type: 'FileSite',
+      locator: { type: 'PathLocator', path: 'node:fs' },
+      position: { line: 2, column: 1 },
+    },
+  },
+};
+const fsFrameStr = 'at node:fs:2:1';
 
 const testErrorFrames = testErrorFramesV8.concat([fsFrame]);
 const testErrorFrameStrs = testErrorFrameStrsV8.concat([fsFrameStr]);
 const testErrorFramesStr = testErrorFrameStrs.join('\n');
 const testErrorStack = `${testErrorHeader}\n${testErrorFramesStr}`;
 
-const testError = new TestError(testErrorMessage);
-
-testError.stack = testErrorStack;
+const makeTestError = ({ message = testErrorMessage, stack = testErrorStack } = {}) => {
+  const testError = new TestError(message);
+  testError.stack = stack;
+  return testError;
+};
 
 module.exports = {
   ...base,
@@ -28,5 +40,5 @@ module.exports = {
   testErrorFrameStrs,
   testErrorFramesStr,
   testErrorStack,
-  testError,
+  makeTestError,
 };

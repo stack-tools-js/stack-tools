@@ -1,5 +1,3 @@
-const { printErrorHeader } = require('stack-tools');
-
 function parseHeader(header) {
   let name = '';
   let message = header;
@@ -10,7 +8,11 @@ function parseHeader(header) {
     message = message.slice(colonIdx + 2).trim();
   }
 
-  return { name, message };
+  return {
+    name: { type: 'ErrorName', name },
+    message: { type: 'ErrorMessage', message },
+    prefix: undefined,
+  };
 }
 
 function parseChainedHeader(header) {
@@ -40,26 +42,22 @@ function parseChainedHeader(header) {
       // eslint-disable-next-line no-template-curly-in-string
       `stack line is neither a frame or a chained error header: \`${header}\``,
     );
+  } else if (/^caused by$/i.test(prefix)) {
+    prefix = '';
   }
 
-  if (headerExtra) message = `${message}\n${headerExtra}`;
-
-  if (prefix && !/^caused by$/i.test(prefix)) {
-    return { name, message, prefix };
-  } else {
-    return { name, message };
+  if (headerExtra) {
+    message = `${message}\n${headerExtra}`;
   }
-}
 
-function printChainedHeader(error) {
-  const { prefix = 'Caused by', name, message } = error;
-
-  return name || message ? `${prefix}: ${printErrorHeader(error)}` : `${prefix}:`;
+  return {
+    name: name ? { type: 'ErrorName', name } : undefined,
+    message: message ? { type: 'ErrorMessage', message } : undefined,
+    prefix: prefix || undefined,
+  };
 }
 
 module.exports = {
   parseHeader,
   parseChainedHeader,
-  printHeader: printErrorHeader,
-  printChainedHeader,
 };

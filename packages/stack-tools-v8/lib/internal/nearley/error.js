@@ -14,6 +14,10 @@ const lexer = moo.compile({
   MessageLine: /^.+$/,
 });
 
+const buildError = (header, frames) => {
+  return { type: 'Error', header, frames };
+};
+
 var grammar = {
     Lexer: lexer,
     ParserRules: [
@@ -21,12 +25,12 @@ var grammar = {
     {"name": "ErrorStack$ebnf$1$subexpression$1", "symbols": ["NL", "CompleteError"]},
     {"name": "ErrorStack$ebnf$1", "symbols": ["ErrorStack$ebnf$1", "ErrorStack$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "ErrorStack", "symbols": ["CompleteError", "ErrorStack$ebnf$1"], "postprocess": (d) => [d[0], ...d[1].map((d) => d[1])]},
-    {"name": "ErrorStack", "symbols": ["Header"], "postprocess": (d) => [{ header: d[0], frames: [] }]},
+    {"name": "ErrorStack", "symbols": ["Header"], "postprocess": (d) => [buildError(d[0])]},
     {"name": "Error", "symbols": ["CompleteError"], "postprocess": id},
-    {"name": "Error", "symbols": ["Header"], "postprocess": (d) => ({ header: d[0], frames: [] })},
+    {"name": "Error", "symbols": ["Header"], "postprocess": (d) => buildError(d[0])},
     {"name": "CompleteError$ebnf$1", "symbols": ["NL"]},
     {"name": "CompleteError$ebnf$1", "symbols": ["CompleteError$ebnf$1", "NL"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "CompleteError", "symbols": ["Header", "CompleteError$ebnf$1", "Stack"], "postprocess": (d) => ({ header: d[0], frames: d[2] })},
+    {"name": "CompleteError", "symbols": ["Header", "CompleteError$ebnf$1", "Stack"], "postprocess": (d) => buildError(d[0], d[2])},
     {"name": "Header$ebnf$1", "symbols": []},
     {"name": "Header$ebnf$1$subexpression$1", "symbols": ["NL", "MessageLine"]},
     {"name": "Header$ebnf$1", "symbols": ["Header$ebnf$1", "Header$ebnf$1$subexpression$1"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},

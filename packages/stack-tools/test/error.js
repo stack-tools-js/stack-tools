@@ -1,36 +1,28 @@
 const test = require('ava');
 
-const {
-  parseError,
-  replaceMessage,
-  printErrorHeader,
-  printFrames,
-  printError,
-} = require('stack-tools');
-const { makeTestError } = require('../../../test/fixtures/error.js');
+const { parseError, replaceMessage, printError } = require('stack-tools');
 const {
   testErrorName,
   testErrorMessage,
   testErrorHeader,
   testErrorFrames,
+  testErrorFrameStrs,
   testErrorStack,
-} = require('../../../test/fixtures/errors.js');
+  testErrorNode,
+  makeTestError,
+} = require('../../../test/fixtures/error.js');
 
 test('can parse an error', (t) => {
-  t.deepEqual(parseError(makeTestError()), {
-    name: testErrorName,
-    message: testErrorMessage,
-    frames: testErrorFrames,
-  });
+  t.deepEqual(parseError(makeTestError()), testErrorNode);
 
   t.deepEqual(parseError(makeTestError({ stack: null })), {
-    name: testErrorName,
-    message: testErrorMessage,
+    ...testErrorNode,
+    frames: undefined,
   });
 
   t.deepEqual(parseError(makeTestError({ stack: 'Nonsense\n    at foo.js:1:1' })), {
-    name: testErrorName,
-    message: testErrorMessage,
+    ...testErrorNode,
+    frames: undefined,
   });
 
   t.throws(() => parseError(2));
@@ -39,13 +31,9 @@ test('can parse an error', (t) => {
 test('can parse an error printed with displayName', (t) => {
   const testError = new Error(testErrorMessage);
   testError.displayName = testErrorName;
-  testError.stack = `${testErrorName}: ${testErrorMessage}\n${testErrorFrames.join('\n')}`;
+  testError.stack = `${testErrorName}: ${testErrorMessage}\n${testErrorFrameStrs.join('\n')}`;
 
-  t.deepEqual(parseError(testError), {
-    name: 'Error',
-    message: testErrorMessage,
-    frames: testErrorFrames,
-  });
+  t.deepEqual(parseError(testError), testErrorNode);
 });
 
 test('can replace an error message', (t) => {
@@ -57,7 +45,7 @@ test('can replace an error message', (t) => {
 
   t.is(message, newMessage);
   t.true(stack.startsWith(newHeader));
-  t.is(stack.slice(newHeader.length + 1), testErrorFrames.join('\n'));
+  t.is(stack.slice(newHeader.length + 1), testErrorFrameStrs.join('\n'));
 
   ({ message, stack } = replaceMessage(makeTestError(), (message) => `${message} : )`));
 
@@ -67,23 +55,52 @@ test('can replace an error message', (t) => {
 
   t.is(message, newMessage);
   t.is(stack, null);
+
+  t.throws(() => replaceMessage());
 });
 
-test('can print an error header', (t) => {
-  t.is(printErrorHeader(makeTestError()), testErrorHeader);
+test('can print an error without frames', (t) => {
+  t.is(printError(makeTestError(), { frames: false }), testErrorHeader);
 
-  t.is(printErrorHeader({ name: '', message: '' }), 'Error');
-  t.is(printErrorHeader({ name: '', message: 'foo' }), 'Error: foo');
-  t.is(printErrorHeader({ name: 'TypeError', message: '' }), 'TypeError');
+  t.is(
+    printError(
+      {
+        type: 'Error',
+        name: { type: 'ErrorName', name: '' },
+        message: { type: 'ErrorMessage', message: '' },
+        frames: testErrorFrames,
+      },
+      { frames: false },
+    ),
+    'Error',
+  );
+  t.is(
+    printError(
+      {
+        type: 'Error',
+        name: { type: 'ErrorName', name: '' },
+        message: { type: 'ErrorMessage', message: 'foo' },
+        frames: undefined,
+      },
+      { frames: false },
+    ),
+    'Error: foo',
+  );
+  t.is(
+    printError(
+      {
+        type: 'Error',
+        name: { type: 'ErrorName', name: 'TypeError' },
+        message: { type: 'ErrorMessage', message: '' },
+      },
+      { frames: false },
+    ),
+    'TypeError',
+  );
 });
 
 test('can print an error', (t) => {
   t.is(printError(makeTestError()), testErrorStack);
 
   t.is(printError(makeTestError({ stack: testErrorHeader })), testErrorHeader);
-});
-
-test("can print an error's stack frames", (t) => {
-  t.is(printFrames(makeTestError()), testErrorFrames.join('\n'));
-  t.is(printFrames(parseError(makeTestError())), testErrorFrames.join('\n'));
 });

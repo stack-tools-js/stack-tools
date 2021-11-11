@@ -1,7 +1,7 @@
 'use strict';
 
 const test = require('ava');
-const cases = require('./fixtures/frame.json');
+const cases = require('./fixtures/frame');
 const { parseFrameStrict } = require('../lib/internal/frame-strict');
 
 const someOnly = cases.some(({ only }) => only);
