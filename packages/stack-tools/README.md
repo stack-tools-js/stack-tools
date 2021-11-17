@@ -63,7 +63,7 @@ The following methods are provided:
 
 - `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`. `message` may also be a `message => newMessage` callback.
 - `getErrors(error)` returns an array of causally chained errors, e.g. `[error, error.cause, error.cause.cause]`,
-- `parseError(error, ?options)` returns an error AST node. For more info see the [AST docs](https://github.com/stack-tools-js/stack-tools/packages/stack-tools/lib/ast.d.ts).
+- `parseError(error, ?options)` returns an error AST node. For more info see the [AST type definitions](https://github.com/stack-tools-js/stack-tools/tree/trunk/packages/stack-tools/lib/ast.d.ts).
 - `parseErrors(errors, ?options)` returns an array of error AST nodes.
 - `printError(error, ?options)` returns `` `${printHeader(errror)}\n${error.stack}` ``
 - `printErrors(error, ?options)` returns `` `${printError(error)}\nCaused by: ${printErrors(error.cause)}` ``
