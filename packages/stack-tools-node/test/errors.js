@@ -10,15 +10,20 @@ const {
   makeTestErrors,
 } = require('./fixtures/errors.js');
 
+const ErrorChain = (errors) => ({ type: 'ErrorChain', errors });
+
 test('cleans a causal chain of errors', (t) => {
-  t.deepEqual(cleanErrors(parseErrors(makeTestErrors())), [
-    {
-      ...testErrorNode,
-      frames: [fileFooFrame],
-    },
-    {
-      ...testCauseNode,
-      frames: [fileBarFrame],
-    },
-  ]);
+  t.deepEqual(
+    cleanErrors(parseErrors(makeTestErrors())),
+    ErrorChain([
+      {
+        ...testErrorNode,
+        frames: [fileFooFrame],
+      },
+      {
+        ...testCauseNode,
+        frames: [fileBarFrame],
+      },
+    ]),
+  );
 });

@@ -6,7 +6,7 @@ const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
 const { parseHeader } = require('./internal/header.js');
 const { parseFrame, isInternalFrame } = require('./frame.js');
-const { visit, isNode } = require('./visit.js');
+const { printNode, isNode } = require('./visit.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
@@ -49,10 +49,16 @@ function parseError(error, options = {}) {
 
 function printError(error, options = {}) {
   const { strict, frames } = options;
-  if (isError(error) && strict) {
-    return basePrintError(error, { frames });
+  if (isError(error)) {
+    if (strict) {
+      return basePrintError(error, { frames });
+    } else {
+      return printNode(parseError(error, options));
+    }
+  } else if (isNode(error, 'ErrorChain')) {
+    return printNode(error, options);
   } else {
-    return visit(parseError(error, options));
+    throw new TypeError('error argument to printError must be an Error, or parseError(error)');
   }
 }
 

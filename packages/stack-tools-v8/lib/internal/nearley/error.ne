@@ -10,6 +10,10 @@ const lexer = moo.compile({
   MessageLine: /^.+$/,
 });
 
+const buildErrorChain = (errors) => {
+  return { type: 'ErrorChain', errors };
+};
+
 const buildError = (header, frames) => {
   return { type: 'Error', header, frames };
 };
@@ -20,9 +24,9 @@ const buildError = (header, frames) => {
 
 ErrorStack ->
   CompleteError (NL CompleteError):*
-  {% (d) => [d[0], ...d[1].map((d) => d[1])] %}
+  {% (d) => buildErrorChain([d[0], ...d[1].map((d) => d[1])]) %}
   | Header
-  {% (d) => [buildError(d[0])] %}
+  {% (d) => buildErrorChain([buildError(d[0])]) %}
 
 Error ->
   CompleteError {% id %}

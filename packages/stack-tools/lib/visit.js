@@ -6,59 +6,76 @@ const nodeTypes = {
   TextFrame: true,
 };
 
-const isNode = (node) => node != null && typeof node === 'object' && nodeTypes[node.type];
+const isNode = (node, type) =>
+  node != null &&
+  typeof node === 'object' &&
+  (type != null ? node.type === type : nodeTypes[node.type]);
 
-const defaultVisitors = {
-  ErrorChain(chain, visit) {
-    return chain.map((error) => visit(error)).join('\nCaused by: ');
-  },
-  Error(error, visit) {
-    const { frames } = error;
-    const header = this.ErrorHeader(error, visit);
+class Visitor {
+  constructor(context, options = {}) {
+    this.context = context;
+    this.options = options;
+  }
+}
 
-    return frames && frames.length ? `${header}\n${this.Frames(frames, visit)}` : header;
-  },
-  ErrorHeader(error, visit) {
-    const name = error.name && visit(error.name);
-    const message = error.message && visit(error.message);
+class PrintVisitor extends Visitor {
+  constructor(context, options = {}) {
+    super(context, { frames: true, ...options });
+  }
+
+  visit(node) {
+    if (node.type.endsWith('Frame')) {
+      return this.Frame(node);
+    } else {
+      return this[node.type](node);
+    }
+  }
+
+  ErrorChain(chain) {
+    return chain.errors.map((error) => this.visit(error)).join('\nCaused by: ');
+  }
+
+  Error(error) {
+    const { frames } = this.options;
+    const header = this.ErrorHeader(error);
+
+    return frames && error.frames && error.frames.length
+      ? `${header}\n${this.Frames(error.frames)}`
+      : header;
+  }
+
+  ErrorHeader(error) {
+    const name = error.name && this.visit(error.name);
+    const message = error.message && this.visit(error.message);
     // prettier-ignore
     return name && message
       ? `${name}: ${message}`
       : message
         ? `Error: ${message}`
         : name || 'Error';
-  },
+  }
+
   ErrorName(name) {
     return name.name;
-  },
+  }
+
   ErrorMessage(message) {
     return message.message;
-  },
-  Frames(frames, visit) {
-    return frames.map((frame) => visit(frame)).join('\n');
-  },
-  Frame(frame, visit) {
-    return visit[frame.type](frame, visit);
-  },
+  }
+
+  Frames(frames) {
+    return frames.map((frame) => this.visit(frame)).join('\n');
+  }
+
+  Frame(frame) {
+    return this[frame.type](frame);
+  }
+
   TextFrame(frame) {
     return frame.text;
-  },
-};
-
-function makeVisit(visitors = {}) {
-  const visit = (node) => {
-    if (node.type.endsWith('Frame')) {
-      return visit.Frame(node, visit);
-    } else {
-      return visit[node.type](node, visit);
-    }
-  };
-
-  Object.assign(visit, defaultVisitors, visitors);
-
-  return visit;
+  }
 }
 
-const visit = makeVisit();
+const printNode = (node, options) => new PrintVisitor({}, options).visit(node);
 
-module.exports = { nodeTypes, defaultVisitors, isNode, makeVisit, visit };
+module.exports = { nodeTypes, Visitor, PrintVisitor, printNode, isNode };

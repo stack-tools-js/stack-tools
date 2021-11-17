@@ -3,7 +3,7 @@ const { Grammar } = require('nearley');
 const { parseFrameStrict } = require('./internal/frame-strict.js');
 const { parse } = require('./internal/nearley/util.js');
 const CompiledFrameGrammar = require('./internal/nearley/frame.js');
-const { visit } = require('./visit.js');
+const { printNode } = require('./visit.js');
 
 const FrameGrammar = Grammar.fromCompiled(CompiledFrameGrammar);
 
@@ -88,7 +88,7 @@ function parseFrame(str) {
 }
 
 function printFrame(frame) {
-  return visit(frame);
+  return printNode(frame);
 }
 
 function isInternalFrame(frame) {

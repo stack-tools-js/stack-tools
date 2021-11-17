@@ -21,3 +21,8 @@ export type ErrorNode = {
   message: ErrorMessageNode | undefined;
   frames: Array<FrameNode> | undefined;
 };
+
+export type ErrorChainNode = {
+  type: 'ErrorChain';
+  errors: Array<ErrorNode>;
+};
