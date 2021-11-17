@@ -2,7 +2,7 @@
 
 `node-tools` provides utilites for printing and parsing node errors and their stacks.
 
-`node-tools` is a shim on top of [v8-tools](https://github.com/stack-tools-js/stack-tools/packages/stack-tools-v8) which expands the definition of `isInternalFrame` to include node internal modules like `fs`.
+`node-tools` is a shim on top of [v8-tools](https://github.com/stack-tools-js/stack-tools/tree/trunk/packages/stack-tools-v8) which expands the definition of `isInternalFrame` to include node internal modules like `fs`.
 
 ## Usage
 
