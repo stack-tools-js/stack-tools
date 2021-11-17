@@ -1,13 +1,13 @@
 const { Grammar } = require('nearley');
 const isError = require('iserror');
-const { printErrors: basePrintErrors, getErrorChain } = require('stack-tools');
+const { printErrors: basePrintErrors, getErrors } = require('stack-tools');
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
 const { parseHeader, parseChainedHeader } = require('./internal/header.js');
 const { cleanError } = require('./error.js');
 const { parseFrame, isInternalFrame } = require('./frame.js');
-const { visit, isNode } = require('./visit.js');
+const { printNode, isNode } = require('./visit.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
@@ -32,53 +32,52 @@ function __parseError(error, options = {}) {
 }
 
 function parseErrors(errors, options = {}) {
-  let errors_;
+  const { frames } = options;
+
+  let parsedErrors;
   if (isError(errors)) {
-    errors_ = getErrorChain(errors);
-  } else if (Array.isArray(errors)) {
-    errors_ = errors;
+    parsedErrors = getErrors(errors).flatMap((error) => __parseError(error.stack, options));
   } else if (typeof errors === 'string') {
-    errors_ = [errors];
+    parsedErrors = __parseError(errors, options);
+  } else if (isNode(errors, 'ErrorChain')) {
+    parsedErrors = errors.errors;
+    if (frames || parsedErrors.every((error) => !error.frames)) {
+      return errors;
+    } else {
+      parsedErrors = parsedErrors.map((error) => ({ ...error, frames: undefined }));
+    }
   } else {
     throw new TypeError(
       'errors argument to printErrors must be an Error, string, or array of errors',
     );
   }
 
-  const results = [];
-  let allNodes = true;
-  for (let i = 0; i < errors_.length; i++) {
-    const error = errors_[i];
-    if (isNode(error)) {
-      results.push(error);
-    } else {
-      allNodes = false;
-      if (typeof error === 'string') {
-        results.push(...__parseError(error, options));
-      } else if (isError(error)) {
-        results.push(...__parseError(error.stack, options));
-      }
-    }
-  }
-  return allNodes ? errors : results;
+  return {
+    type: 'ErrorChain',
+    errors: parsedErrors,
+  };
 }
 
 function printErrors(errors, options = {}) {
-  const { strict = false } = options;
+  const { strict = false, frames = true } = options;
   if (isError(errors)) {
-    return strict ? basePrintErrors(errors) : visit.ErrorChain(parseErrors(errors, options), visit);
-  } else if (Array.isArray(errors)) {
-    return visit.ErrorChain(parseErrors(errors, options), visit);
+    return strict ? basePrintErrors(errors, { frames }) : printNode(parseErrors(errors, options));
+  } else if (isNode(errors, 'ErrorChain')) {
+    return printNode(errors, options);
   } else {
-    throw new TypeError('errors argument to printErrors must be an Error or array of errors');
+    throw new TypeError('errors argument to printErrors must be an Error or parseErrors(errors)');
   }
 }
 
 function cleanErrors(errors, predicate = isInternalFrame) {
-  for (let i = 0; i < errors.length; i++) {
-    cleanError(errors[i], predicate);
+  if (isNode(errors, 'ErrorChain')) {
+    for (let i = 0; i < errors.errors.length; i++) {
+      cleanError(errors.errors[i], predicate);
+    }
+    return errors;
+  } else {
+    throw new TypeError('errors argument to cleanErrors must be parseErrors(errors)');
   }
-  return errors;
 }
 
 module.exports = {

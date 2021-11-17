@@ -1,4 +1,4 @@
-const { nodeTypes: baseNodeTypes, defaultVisitors: baseVisitors } = require('stack-tools');
+const { nodeTypes: baseNodeTypes, Visitor, PrintVisitor } = require('stack-tools');
 
 const nodeTypes = Object.assign({}, baseNodeTypes, {
   CallSiteFrame: true,
@@ -17,62 +17,81 @@ const nodeTypes = Object.assign({}, baseNodeTypes, {
 
 const isNode = (node) => node != null && typeof node === 'object' && nodeTypes[node.type];
 
-function printCallSite(callSite, visit) {
+function printCallSite(callSite, visitor) {
   const { call, site } = callSite;
   const parts = [];
 
-  if (call) parts.push(visit(call));
-  if (site) parts.push(call ? `(${visit(site)})` : visit(site));
+  if (call) parts.push(visitor.visit(call));
+  if (site) parts.push(call ? `(${visitor.visit(site)})` : visitor.visit(site));
 
   return parts.join(' ');
 }
 
-const defaultVisitors = Object.assign({}, baseVisitors, {
-  ErrorChain(chain, visit) {
+class V8PrintVisitor extends PrintVisitor {
+  visit(node) {
+    if (node.type.endsWith('Frame')) {
+      return this.Frame(node);
+    } else if (node.type.endsWith('Site')) {
+      return this.Site(node);
+    } else if (node.type.endsWith('Locator')) {
+      return this.Locator(node);
+    } else if (this[node.type]) {
+      return this[node.type](node);
+    } else {
+      throw new Error(`Unknown node of type ${node.type}`);
+    }
+  }
+
+  ErrorChain(chain) {
     let str = '';
-    for (let i = 0; i < chain.length; i++) {
+    for (let i = 0; i < chain.errors.length; i++) {
       if (i > 0) str += '\n';
-      const error = chain[i];
+      const error = chain.errors[i];
       const { frames } = error;
       let header;
       if (i === 0) {
-        header = visit.ErrorHeader(error, visit);
+        header = this.ErrorHeader(error);
       } else {
         const { prefix = 'Caused by', name, message } = error;
 
-        header = name || message ? `${prefix}: ${visit.ErrorHeader(error, visit)}` : `${prefix}:`;
+        header = name || message ? `${prefix}: ${this.ErrorHeader(error)}` : `${prefix}:`;
       }
 
-      str += frames && frames.length ? `${header}\n${visit.Frames(frames, visit)}` : header;
+      str += frames && frames.length ? `${header}\n${this.Frames(frames)}` : header;
     }
 
     return str;
-  },
-  Frame(frame, visit) {
-    return `    at ${visit[frame.type](frame, visit)}`;
-  },
+  }
+
+  Frame(frame) {
+    return `    at ${this[frame.type](frame)}`;
+  }
+
   OmittedFrame() {
     return '<omitted>';
-  },
-  CallSiteFrame(frame, visit) {
-    return printCallSite(frame.callSite, visit);
-  },
-  EvalFrame(frame, visit) {
+  }
+
+  CallSiteFrame(frame) {
+    return printCallSite(frame.callSite, this);
+  }
+
+  EvalFrame(frame) {
     const { callSite, evalCallSite } = frame;
     let str = '';
 
-    str += visit(callSite.call);
+    str += this.visit(callSite.call);
 
     str += ' (';
 
-    str += `eval at ${printCallSite(evalCallSite, visit)}`;
+    str += `eval at ${printCallSite(evalCallSite, this)}`;
 
-    if (callSite.site) str += `, ${visit(callSite.site)}`;
+    if (callSite.site) str += `, ${this.visit(callSite.site)}`;
 
     str += ')';
 
     return str;
-  },
+  }
+
   Call(call) {
     const parts = [];
 
@@ -82,59 +101,49 @@ const defaultVisitors = Object.assign({}, baseVisitors, {
     if (call.method !== call.function) parts.push(`[as ${call.method}]`);
 
     return parts.join(' ');
-  },
-  Site(site, visit) {
-    return visit[site.type](site, visit);
-  },
+  }
+
+  Site(site) {
+    return this[site.type](site);
+  }
+
   AnonymousSite() {
     return '<anonymous>';
-  },
+  }
+
   NativeSite() {
     return 'native';
-  },
-  FileSite(site, visit) {
-    return `${visit(site.locator)}${visit(site.position)}`;
-  },
+  }
+
+  FileSite(site) {
+    return `${this.visit(site.locator)}${this.visit(site.position)}`;
+  }
+
   IndexSite(site) {
     return `index ${site.index}`;
-  },
-  Locator(locator, visit) {
-    return visit[locator.type](locator, visit);
-  },
+  }
+
+  Locator(locator) {
+    return this[locator.type](locator);
+  }
+
   AnonymousLocator() {
     return '<anonymous>';
-  },
+  }
+
   PathLocator(locator) {
     return locator.path;
-  },
+  }
+
   URILocator(locator) {
     return decodeURI(`${locator.scheme}://${locator.path}`);
-  },
-  Position(pos, visit) {
+  }
+
+  Position(pos) {
     return `:${pos.line}:${pos.column}`;
-  },
-});
-
-function makeVisit(visitors = {}) {
-  const visit = (node) => {
-    if (node.type.endsWith('Frame')) {
-      return visit.Frame(node, visit);
-    } else if (node.type.endsWith('Site')) {
-      return visit.Site(node, visit);
-    } else if (node.type.endsWith('Locator')) {
-      return visit.Locator(node, visit);
-    } else if (visit[node.type]) {
-      return visit[node.type](node, visit);
-    } else {
-      throw new Error(`Unknown node of type ${node.type}`);
-    }
-  };
-
-  Object.assign(visit, defaultVisitors, visitors);
-
-  return visit;
+  }
 }
 
-const visit = makeVisit();
+const printNode = (node, options) => new V8PrintVisitor({}, options).visit(node);
 
-module.exports = { nodeTypes, defaultVisitors, isNode, makeVisit, visit };
+module.exports = { nodeTypes, Visitor, PrintVisitor: V8PrintVisitor, printNode, isNode };

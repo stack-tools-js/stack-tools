@@ -1,6 +1,6 @@
 const isError = require('iserror');
 
-const { isNode, visit } = require('./visit.js');
+const { isNode, printNode } = require('./visit.js');
 
 // Stolen from escape-string-regexp © sindresorhus
 // It was easier to copy the code than transpile to cjs inside node_modules
@@ -80,10 +80,16 @@ function replaceMessage(error, message) {
 
 function printError(error, options = {}) {
   const { frames = true } = options;
-  if (isError(error) && error.stack && frames) {
-    return error.stack;
+  if (isError(error)) {
+    if (error.stack && frames) {
+      return error.stack;
+    } else {
+      return printNode(parseError(error, options));
+    }
+  } else if (isNode(error, 'Error')) {
+    return printNode(error, options);
   } else {
-    return visit(parseError(error, options));
+    throw new Error('error argument to printError must be an Error or parseError(error)');
   }
 }
 

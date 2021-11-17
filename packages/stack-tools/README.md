@@ -62,7 +62,7 @@ Utilities that work with stacks from any environment are in the `stack-tools` mo
 The following methods are provided:
 
 - `replaceMessage(error, message)` replaces `error.message` with `message` and also updates the text of `error.stack`. `message` may also be a `message => newMessage` callback.
-- `getErrorChain(error)` returns an array of causally chained errors, e.g. `[error, error.cause, error.cause.cause]`,
+- `getErrors(error)` returns an array of causally chained errors, e.g. `[error, error.cause, error.cause.cause]`,
 - `parseError(error, ?options)` returns an error AST node. For more info see the [AST docs](https://github.com/stack-tools-js/stack-tools/packages/stack-tools/lib/ast.d.ts).
 - `parseErrors(errors, ?options)` returns an array of error AST nodes.
 - `printError(error, ?options)` returns `` `${printHeader(errror)}\n${error.stack}` ``

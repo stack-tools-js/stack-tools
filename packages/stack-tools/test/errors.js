@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const { getErrorChain, parseErrors, printErrors } = require('stack-tools');
+const { getErrors, parseErrors, printErrors } = require('stack-tools');
 const {
   testCauseHeader,
   testCauseStack,
@@ -13,11 +13,14 @@ const {
 } = require('../../../test/fixtures/errors.js');
 
 test('can get errors', (t) => {
-  t.deepEqual(getErrorChain(makeTestErrors()), [makeTestErrors(), makeTestCause()]);
+  t.deepEqual(getErrors(makeTestErrors()), [makeTestErrors(), makeTestCause()]);
 });
 
 test('can parse a chain of error', (t) => {
-  t.deepEqual(parseErrors(makeTestErrors()), [testErrorNode, testCauseNode]);
+  t.deepEqual(parseErrors(makeTestErrors()), {
+    type: 'ErrorChain',
+    errors: [testErrorNode, testCauseNode],
+  });
 
   // We can't parse this because we have no idea what the syntax of stack frames is
   t.throws(() => parseErrors('Error: Message'));
