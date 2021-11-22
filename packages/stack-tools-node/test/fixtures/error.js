@@ -18,6 +18,7 @@ const cjsLoaderFrame = {
       position: { line: 2, column: 1 },
     },
   },
+  evalCallSite: undefined,
 };
 const cjsLoaderFrameStr = 'at internal/cjs/loader.js:2:1';
 

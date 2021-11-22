@@ -71,17 +71,11 @@ export type CallSiteFrameNode = {
   callSite: CallSite;
 };
 
-export type EvalFrameNode = {
-  type: 'EvalFrame';
-  callSite: CallSite;
-  evalCallSite: CallSite | undefined;
-};
-
 export type OmittedFrameNode = {
   type: 'OmittedFrame';
 };
 
-export type FrameNode = TextFrameNode | CallSiteFrameNode | EvalFrameNode | OmittedFrameNode;
+export type FrameNode = TextFrameNode | CallSiteFrameNode | OmittedFrameNode;
 
 export type ErrorNode = {
   type: 'Error';
@@ -101,7 +95,6 @@ export type Node =
   | TextFrameNode
   | CallSiteFrameNode
   | OmittedFrameNode
-  | EvalFrameNode
   | CallNode
   | AnonymousSiteNode
   | NativeSiteNode
@@ -118,7 +111,6 @@ export type NodeTypes =
   | BaseNodeTypes
   | 'CallSiteFrame'
   | 'OmittedFrame'
-  | 'EvalFrame'
   | 'Call'
   | 'AnonymousSite'
   | 'NativeSite'
@@ -139,7 +131,6 @@ export class Visitors<O extends Record<string, unknown>> extends BaseVisitors<O>
   visit(node: Node): unknown;
 
   CallSiteFrame?(frame: CallSiteFrameNode): unknown;
-  EvalFrame?(frame: EvalFrameNode): unknown;
   OmittedFrame?(frame: OmittedFrameNode): unknown;
   Frame?(frame: FrameNode): unknown;
   Call?(call: CallNode): unknown;
@@ -163,7 +154,6 @@ export class PrintVisitors<O extends { frames?: boolean }> extends BasePrintVisi
   visit(node: Node): string;
 
   CallSiteFrame(frame: CallSiteFrameNode): string;
-  EvalFrame(frame: EvalFrameNode): string;
   OmittedFrame(frame: OmittedFrameNode): string;
   Frame(frame: FrameNode): string;
   Call(call: CallNode): string;

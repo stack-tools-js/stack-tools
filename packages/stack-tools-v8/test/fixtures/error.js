@@ -5,6 +5,7 @@ const { TestError, testErrorName, testErrorMessage, testErrorHeader } = base;
 const nativeFrame = {
   type: 'CallSiteFrame',
   callSite: { call: undefined, site: { type: 'NativeSite' } },
+  evalCallSite: undefined,
 };
 const nativeFrameStr = '    at native';
 const fileFooPath = '/home/foo.js';
@@ -22,6 +23,7 @@ const fileFooFrame = {
       },
     },
   },
+  evalCallSite: undefined,
 };
 const fileFooFrameStr = '    at /home/foo.js:1:1';
 

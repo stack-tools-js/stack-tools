@@ -68,13 +68,11 @@ function parseFrame(str) {
     let score = 0;
 
     for (const frame of frames) {
-      switch (frame.type) {
-        case 'CallSiteFrame':
-          score = scoreCallSite(frame.callSite);
-          break;
-        case 'EvalFrame':
-          score = scoreCallSite(frame.callSite) + scoreCallSite(frame.evalCallSite, 8);
-          break;
+      if (frame.type === 'CallSiteFrame') {
+        score = scoreCallSite(frame.callSite);
+        if (frame.evalCallSite) score += scoreCallSite(frame.evalCallSite, 8);
+      } else {
+        score += 2 ^ 16;
       }
 
       if (score > bestScore) {
@@ -98,9 +96,7 @@ function __isInternalSite(site) {
 function isInternalFrame(node) {
   if (isNode(node)) {
     if (node.type.endsWith('Frame')) {
-      return node.type === 'CallSiteFrame' || node.type === 'EvalFrame'
-        ? __isInternalSite(node.callSite.site)
-        : false;
+      return node.type === 'CallSiteFrame' ? __isInternalSite(node.callSite.site) : false;
     } else if (node.type.endsWith('Site')) {
       return __isInternalSite(node);
     }
@@ -128,9 +124,7 @@ function __getAbsoluteSitePath(site) {
 function getAbsoluteSitePath(node) {
   if (isNode(node)) {
     if (node.type.endsWith('Frame')) {
-      return node.type === 'CallSiteFrame' || node.type === 'EvalFrame'
-        ? __getAbsoluteSitePath(node.callSite.site)
-        : null;
+      return node.type === 'CallSiteFrame' ? __getAbsoluteSitePath(node.callSite.site) : null;
     } else if (node.type.endsWith('Site')) {
       return __getAbsoluteSitePath(node);
     }

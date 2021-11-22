@@ -16,12 +16,12 @@ const lexer = moo.compile({
 });
 
 const buildFrame = (callSite) => {
-  return { type: 'CallSiteFrame', callSite };
+  return { type: 'CallSiteFrame', callSite, evalCallSite: undefined };
 };
 
 const buildEvalFrame = (evalOrigin, site, eval_) => {
   return {
-    type: 'EvalFrame',
+    type: 'CallSiteFrame',
     callSite: {
       call: {
         type: 'Call',
