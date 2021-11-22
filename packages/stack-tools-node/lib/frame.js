@@ -18,9 +18,7 @@ function __isInternalSite(site) {
 
 function isInternalFrame(node) {
   if (node.type.endsWith('Frame')) {
-    return node.type === 'CallSiteFrame' || node.type === 'EvalFrame'
-      ? __isInternalSite(node.callSite.site)
-      : false;
+    return node.type === 'CallSiteFrame' ? __isInternalSite(node.callSite.site) : false;
   } else if (node.type.endsWith('Site')) {
     return __isInternalSite(node);
   } else {

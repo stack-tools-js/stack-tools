@@ -32,6 +32,7 @@ const fileBarFrame = {
       },
     },
   },
+  evalCallSite: undefined,
 };
 const fileBarFrameStr = '    at bar.js:22:8';
 

@@ -1,6 +1,7 @@
 @{%
 const { stringFrom, get } = require('./util.js');
-const { lexer,
+const {
+  lexer,
   buildFrame,
   buildEvalFrame,
   buildCallSite,

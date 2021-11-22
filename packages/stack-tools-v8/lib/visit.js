@@ -3,7 +3,6 @@ const { nodeTypes: baseNodeTypes, Visitor, PrintVisitor } = require('stack-tools
 const nodeTypes = {
   ...baseNodeTypes,
   CallSiteFrame: true,
-  EvalFrame: true,
   OmittedFrame: true,
   Call: true,
   AnonymousSite: true,
@@ -63,24 +62,24 @@ class V8PrintVisitor extends PrintVisitor {
   }
 
   CallSiteFrame(frame) {
-    return printCallSite(frame.callSite, this);
-  }
+    if (!frame.evalCallSite) {
+      return printCallSite(frame.callSite, this);
+    } else {
+      const { callSite, evalCallSite } = frame;
+      let str = '';
 
-  EvalFrame(frame) {
-    const { callSite, evalCallSite } = frame;
-    let str = '';
+      str += this.visit(callSite.call);
 
-    str += this.visit(callSite.call);
+      str += ' (';
 
-    str += ' (';
+      str += `eval at ${printCallSite(evalCallSite, this)}`;
 
-    str += `eval at ${printCallSite(evalCallSite, this)}`;
+      if (callSite.site) str += `, ${this.visit(callSite.site)}`;
 
-    if (callSite.site) str += `, ${this.visit(callSite.site)}`;
+      str += ')';
 
-    str += ')';
-
-    return str;
+      return str;
+    }
   }
 
   Call(call) {
