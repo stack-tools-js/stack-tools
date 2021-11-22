@@ -14,6 +14,7 @@ const {
   testErrorHeader,
   testErrorStack,
   testErrorNode,
+  testErrorsNode,
   makeTestErrors,
 } = require('./fixtures/errors.js');
 
@@ -109,7 +110,9 @@ test('can print an error chain', (t) => {
 });
 
 test('can parse a chain of errors', (t) => {
-  t.deepEqual(parseErrors(makeTestErrors()), ErrorChain([testErrorNode, testCauseNode]));
+  t.deepEqual(parseErrors(makeTestErrors()), testErrorsNode);
+
+  t.is(parseErrors(testErrorsNode), testErrorsNode);
 });
 
 test('when causal headers are present in stack', (t) => {
@@ -152,4 +155,6 @@ test('cleans a chain of errors', (t) => {
       },
     ]),
   );
+
+  t.throws(() => cleanErrors(-1));
 });

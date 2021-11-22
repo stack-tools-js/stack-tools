@@ -1,7 +1,7 @@
 const test = require('ava');
 const { isInternalFrame } = require('@stack-tools/node-tools');
 
-const { fsFrame } = require('./fixtures/error.js');
+const { cjsLoaderFrame } = require('./fixtures/error.js');
 
 test('isInternalFrame', (t) => {
   t.true(
@@ -13,7 +13,8 @@ test('isInternalFrame', (t) => {
       },
     }),
   );
-  t.true(isInternalFrame(fsFrame));
+  t.true(isInternalFrame({ type: 'NativeSite' }));
+  t.true(isInternalFrame(cjsLoaderFrame));
   t.false(
     isInternalFrame({
       type: 'CallSiteFrame',
@@ -23,4 +24,6 @@ test('isInternalFrame', (t) => {
       },
     }),
   );
+  t.false(isInternalFrame({ type: 'OmittedFrame' }));
+  t.throws(() => isInternalFrame({ type: 'Bork' }));
 });

@@ -1,6 +1,6 @@
 const error = require('./error.js');
 
-const { TestError, testErrorMessage, testErrorStack } = error;
+const { TestError, testErrorMessage, testErrorStack, testErrorNode } = error;
 
 const nativeTextFrame = { type: 'TextFrame', text: `    at native` };
 
@@ -15,6 +15,11 @@ const testCauseNode = {
   name: { type: 'ErrorName', name: testCauseName },
   message: { type: 'ErrorMessage', message: testCauseMessage },
   frames: testCauseFrames,
+};
+
+const testErrorsNode = {
+  type: 'ErrorChain',
+  errors: [testErrorNode, testCauseNode],
 };
 
 const makeTestCause = ({ message = testCauseMessage, stack = testCauseStack } = {}) => {
@@ -44,6 +49,7 @@ module.exports = {
   testCauseFrameStrs,
   testCauseStack,
   testCauseNode,
+  testErrorsNode,
   makeTestCause,
   makeTestErrors,
 };

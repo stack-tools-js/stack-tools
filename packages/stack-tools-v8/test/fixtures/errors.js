@@ -15,6 +15,7 @@ const {
   testErrorMessage,
   testErrorFrames,
   testErrorStack,
+  testErrorNode,
 } = base;
 
 const fileBarFrame = {
@@ -42,6 +43,10 @@ const testCauseNode = {
   message: { type: 'ErrorMessage', message: testCauseMessage },
   frames: testCauseFrames,
   prefix: undefined,
+};
+const testErrorsNode = {
+  type: 'ErrorChain',
+  errors: [testErrorNode, testCauseNode],
 };
 
 const makeTestCause = () => {
@@ -75,6 +80,7 @@ module.exports = {
   testCauseFrames,
   testCauseStack,
   testCauseNode,
+  testErrorsNode,
   makeTestCause,
   testErrorFrames,
   testErrorStack,

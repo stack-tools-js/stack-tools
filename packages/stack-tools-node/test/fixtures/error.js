@@ -8,21 +8,21 @@ const {
   testErrorHeader,
 } = base;
 
-const fsFrame = {
+const cjsLoaderFrame = {
   type: 'CallSiteFrame',
   callSite: {
     call: undefined,
     site: {
       type: 'FileSite',
-      locator: { type: 'PathLocator', path: 'node:fs' },
+      locator: { type: 'PathLocator', path: 'internal/cjs/loader.js' },
       position: { line: 2, column: 1 },
     },
   },
 };
-const fsFrameStr = 'at node:fs:2:1';
+const cjsLoaderFrameStr = 'at internal/cjs/loader.js:2:1';
 
-const testErrorFrames = testErrorFramesV8.concat([fsFrame]);
-const testErrorFrameStrs = testErrorFrameStrsV8.concat([fsFrameStr]);
+const testErrorFrames = [...testErrorFramesV8, cjsLoaderFrame];
+const testErrorFrameStrs = [...testErrorFrameStrsV8, cjsLoaderFrameStr];
 const testErrorFramesStr = testErrorFrameStrs.join('\n');
 const testErrorStack = `${testErrorHeader}\n${testErrorFramesStr}`;
 
@@ -34,8 +34,8 @@ const makeTestError = ({ message = testErrorMessage, stack = testErrorStack } = 
 
 module.exports = {
   ...base,
-  fsFrame,
-  fsFrameStr,
+  cjsLoaderFrame,
+  cjsLoaderFrameStr,
   testErrorFrames,
   testErrorFrameStrs,
   testErrorFramesStr,

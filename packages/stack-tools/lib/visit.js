@@ -11,7 +11,31 @@ const isNode = (node, type) =>
   typeof node === 'object' &&
   (type != null ? node.type === type : nodeTypes[node.type]);
 
+const assertNode = (node) => {
+  if (!node.type) {
+    throw new TypeError('node argument to visit must have a type');
+  }
+};
+
 class Visitor {
+  static visit(node, options) {
+    return new this({}, options).visit(node);
+  }
+
+  static get suffixMatcher() {
+    return /(?:Frame)$/;
+  }
+
+  visit(node) {
+    assertNode(node);
+
+    const { suffixMatcher } = this.constructor;
+    const typeMatch = suffixMatcher.exec(node.type);
+    const type = typeMatch ? typeMatch[0] : node.type;
+
+    return this[type] ? this[type](node) : node;
+  }
+
   constructor(context, options = {}) {
     this.context = context;
     this.options = options;
@@ -24,11 +48,13 @@ class PrintVisitor extends Visitor {
   }
 
   visit(node) {
-    if (node.type.endsWith('Frame')) {
-      return this.Frame(node);
-    } else {
-      return this[node.type](node);
+    assertNode(node);
+
+    if (!this[node.type]) {
+      throw new TypeError(`node of type ${node.type} is not printable`);
     }
+
+    return super.visit(node);
   }
 
   ErrorChain(chain) {

@@ -12,7 +12,7 @@ function getErrors(error) {
 }
 
 function parseErrors(errors, options = {}) {
-  const { frames } = options;
+  const { frames = true } = options;
   let errors_;
 
   if (isError(errors)) {

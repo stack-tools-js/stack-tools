@@ -52,6 +52,7 @@ test('parses an error', (t) => {
     ...testErrorNode,
     frames: undefined,
   });
+  t.is(parseError(testErrorNode), testErrorNode);
 
   t.throws(() => parseError(2));
 });
@@ -80,6 +81,7 @@ test('prints an error', (t) => {
   t.throws(() =>
     printError({ ...testErrorNode, name: { type: 'FubarName', name: testErrorName } }),
   );
+  t.throws(() => printError(99.98));
 });
 
 test('cleans an error', (t) => {
