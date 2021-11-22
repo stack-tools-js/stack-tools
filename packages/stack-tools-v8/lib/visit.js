@@ -1,19 +1,20 @@
 const { nodeTypes: baseNodeTypes, Visitor, PrintVisitor } = require('stack-tools');
 
-const nodeTypes = Object.assign({}, baseNodeTypes, {
+const nodeTypes = {
+  ...baseNodeTypes,
   CallSiteFrame: true,
   EvalFrame: true,
+  OmittedFrame: true,
   Call: true,
   AnonymousSite: true,
   NativeSite: true,
   FileSite: true,
   IndexSite: true,
-  OmittedSite: true,
   AnonymousLocator: true,
   PathLocator: true,
   URILocator: true,
   Position: true,
-});
+};
 
 const isNode = (node) => node != null && typeof node === 'object' && nodeTypes[node.type];
 
@@ -28,18 +29,8 @@ function printCallSite(callSite, visitor) {
 }
 
 class V8PrintVisitor extends PrintVisitor {
-  visit(node) {
-    if (node.type.endsWith('Frame')) {
-      return this.Frame(node);
-    } else if (node.type.endsWith('Site')) {
-      return this.Site(node);
-    } else if (node.type.endsWith('Locator')) {
-      return this.Locator(node);
-    } else if (this[node.type]) {
-      return this[node.type](node);
-    } else {
-      throw new Error(`Unknown node of type ${node.type}`);
-    }
+  static get suffixMatcher() {
+    return /(?:Frame|Site|Locator)$/;
   }
 
   ErrorChain(chain) {

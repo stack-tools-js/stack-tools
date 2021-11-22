@@ -3,7 +3,7 @@ const { Grammar } = require('nearley');
 const { parseFrameStrict } = require('./internal/frame-strict.js');
 const { parse } = require('./internal/nearley/util.js');
 const CompiledFrameGrammar = require('./internal/nearley/frame.js');
-const { printNode } = require('./visit.js');
+const { isNode, printNode } = require('./visit.js');
 
 const FrameGrammar = Grammar.fromCompiled(CompiledFrameGrammar);
 
@@ -91,9 +91,52 @@ function printFrame(frame) {
   return printNode(frame);
 }
 
-function isInternalFrame(frame) {
-  const siteType = frame.callSite.site.type;
-  return siteType === 'NativeSite' || siteType === 'IndexSite';
+function __isInternalSite(site) {
+  return site.type === 'NativeSite' || site.type === 'IndexSite';
 }
 
-module.exports = { parseFrame, printFrame, isInternalFrame };
+function isInternalFrame(node) {
+  if (isNode(node)) {
+    if (node.type.endsWith('Frame')) {
+      return node.type === 'CallSiteFrame' || node.type === 'EvalFrame'
+        ? __isInternalSite(node.callSite.site)
+        : false;
+    } else if (node.type.endsWith('Site')) {
+      return __isInternalSite(node);
+    }
+  }
+
+  throw new TypeError('node argument to isInternalFrame must be a FrameNode or SiteNode');
+}
+
+function __getAbsoluteSitePath(site) {
+  if (site.type === 'FileSite') {
+    const { locator } = site;
+    if (locator.type === 'PathLocator') {
+      const { path } = locator;
+      // we have no way of knowing what relative paths are relative to, so discard them
+      if (path.startsWith('/')) return path;
+    } else if (locator.type === 'URILocator') {
+      const { scheme, path } = locator;
+
+      if (scheme === 'file') return path;
+    }
+  }
+  return null;
+}
+
+function getAbsoluteSitePath(node) {
+  if (isNode(node)) {
+    if (node.type.endsWith('Frame')) {
+      return node.type === 'CallSiteFrame' || node.type === 'EvalFrame'
+        ? __getAbsoluteSitePath(node.callSite.site)
+        : null;
+    } else if (node.type.endsWith('Site')) {
+      return __getAbsoluteSitePath(node);
+    }
+  }
+
+  throw new TypeError('node argument to getAbsoluteSitePath must be a FrameNode or SiteNode');
+}
+
+module.exports = { parseFrame, printFrame, isInternalFrame, getAbsoluteSitePath };

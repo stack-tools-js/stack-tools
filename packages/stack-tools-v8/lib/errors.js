@@ -1,6 +1,10 @@
 const { Grammar } = require('nearley');
 const isError = require('iserror');
-const { printErrors: basePrintErrors, getErrors } = require('stack-tools');
+const {
+  printErrors: basePrintErrors,
+  parseErrors: baseParseErrors,
+  getErrors,
+} = require('stack-tools');
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
@@ -40,12 +44,7 @@ function parseErrors(errors, options = {}) {
   } else if (typeof errors === 'string') {
     parsedErrors = __parseError(errors, options);
   } else if (isNode(errors, 'ErrorChain')) {
-    parsedErrors = errors.errors;
-    if (frames || parsedErrors.every((error) => !error.frames)) {
-      return errors;
-    } else {
-      parsedErrors = parsedErrors.map((error) => ({ ...error, frames: undefined }));
-    }
+    return baseParseErrors(errors, { frames });
   } else {
     throw new TypeError(
       'errors argument to printErrors must be an Error, string, or array of errors',

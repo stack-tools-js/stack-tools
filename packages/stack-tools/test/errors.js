@@ -4,11 +4,10 @@ const { getErrors, parseErrors, printErrors } = require('stack-tools');
 const {
   testCauseHeader,
   testCauseStack,
-  testCauseNode,
   makeTestCause,
   testErrorHeader,
   testErrorStack,
-  testErrorNode,
+  testErrorsNode,
   makeTestErrors,
 } = require('../../../test/fixtures/errors.js');
 
@@ -17,10 +16,18 @@ test('can get errors', (t) => {
 });
 
 test('can parse a chain of error', (t) => {
-  t.deepEqual(parseErrors(makeTestErrors()), {
-    type: 'ErrorChain',
-    errors: [testErrorNode, testCauseNode],
-  });
+  t.deepEqual(parseErrors(makeTestErrors()), testErrorsNode);
+
+  t.is(parseErrors(testErrorsNode), testErrorsNode);
+
+  const testErrorsNodeNoFrames = {
+    ...testErrorsNode,
+    errors: testErrorsNode.errors.map((error) => ({ ...error, frames: undefined })),
+  };
+
+  t.is(parseErrors(testErrorsNodeNoFrames, { frames: false }), testErrorsNodeNoFrames);
+
+  t.deepEqual(parseErrors(testErrorsNode, { frames: false }), testErrorsNodeNoFrames);
 
   // We can't parse this because we have no idea what the syntax of stack frames is
   t.throws(() => parseErrors('Error: Message'));
@@ -36,4 +43,5 @@ test('can print a chain of errors', (t) => {
   const expected = `${testErrorStack}\nCaused by: ${testCauseStack}`;
   t.is(printErrors(makeTestErrors()), expected);
   t.is(printErrors(parseErrors(makeTestErrors())), expected);
+  t.throws(() => printErrors(0));
 });

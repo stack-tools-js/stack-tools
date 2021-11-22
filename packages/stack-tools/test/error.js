@@ -25,6 +25,16 @@ test('can parse an error', (t) => {
     frames: undefined,
   });
 
+  const testErrorNodeNoFrames = {
+    ...testErrorNode,
+    frames: undefined,
+  };
+
+  t.is(parseError(testErrorNode), testErrorNode);
+  t.is(parseError(testErrorNodeNoFrames, { frames: false }), testErrorNodeNoFrames);
+
+  t.deepEqual(parseError(testErrorNode, { frames: false }), testErrorNodeNoFrames);
+
   t.throws(() => parseError(2));
 });
 
@@ -103,4 +113,6 @@ test('can print an error', (t) => {
   t.is(printError(makeTestError()), testErrorStack);
 
   t.is(printError(makeTestError({ stack: testErrorHeader })), testErrorHeader);
+
+  t.throws(() => printError(1200));
 });

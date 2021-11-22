@@ -51,7 +51,7 @@ function parseError(error, options = {}) {
     }
     return node;
   } else if (isNode(error)) {
-    return frames ? error : { ...error, frames: undefined };
+    return frames || !error.frames ? error : { ...error, frames: undefined };
   } else {
     throw new Error('error argument to parseError must be an Error or parseError(Error)');
   }
@@ -64,11 +64,10 @@ function replaceMessage(error, message) {
       const parsedError = parseError(error, { frames: false });
       const oldHeader = printError(parsedError);
       error.stack =
-        printError(
-          Object.assign({}, parsedError, {
-            message: Object.assign({}, parsedError.message, { message: message_ }),
-          }),
-        ) + error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
+        printError({
+          ...parsedError,
+          message: { ...parsedError.message, message: message_ },
+        }) + error.stack.replace(new RegExp(`^${escapeRegex(oldHeader)}`), '');
     }
     error.message = message_;
 

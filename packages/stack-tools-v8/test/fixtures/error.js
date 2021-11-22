@@ -7,13 +7,14 @@ const nativeFrame = {
   callSite: { call: undefined, site: { type: 'NativeSite' } },
 };
 const nativeFrameStr = '    at native';
+const fileFooPath = '/home/foo.js';
 const fileFooFrame = {
   type: 'CallSiteFrame',
   callSite: {
     call: undefined,
     site: {
       type: 'FileSite',
-      locator: { type: 'PathLocator', path: 'foo.js' },
+      locator: { type: 'PathLocator', path: fileFooPath },
       position: {
         type: 'Position',
         line: 1,
@@ -22,7 +23,7 @@ const fileFooFrame = {
     },
   },
 };
-const fileFooFrameStr = '    at foo.js:1:1';
+const fileFooFrameStr = '    at /home/foo.js:1:1';
 
 const testErrorFrames = [fileFooFrame, nativeFrame];
 const testErrorFrameStrs = [fileFooFrameStr, nativeFrameStr];
@@ -46,6 +47,7 @@ module.exports = {
   ...base,
   nativeFrame,
   nativeFrameStr,
+  fileFooPath,
   fileFooFrame,
   fileFooFrameStr,
   testErrorFrames,

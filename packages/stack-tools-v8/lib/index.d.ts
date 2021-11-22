@@ -1,4 +1,4 @@
-import type { ErrorNode, FrameNode } from './ast';
+import type { ErrorNode, ErrorChainNode, FrameNode, SiteNode } from './ast';
 
 export * from './ast';
 
@@ -14,19 +14,27 @@ export function parseFrame(error: Error | FrameNode | string): FrameNode;
 
 export function printFrame(frame: FrameNode | string): string;
 
-export function isInternalFrame(frame: FrameNode): boolean;
+export function isInternalFrame(frame: FrameNode | SiteNode): boolean;
+
+export function getAbsoluteSitePath(frame: FrameNode | SiteNode): string | null;
 
 export function parseError(error: Error | string | ErrorNode, options?: Options): ErrorNode;
 
 export function printError(error: Error | ErrorNode, options?: Options): string;
 
-export function cleanError(error: ErrorNode): ErrorNode;
+export function cleanError(
+  error: ErrorNode,
+  isInternalFrame?: (frame: FrameNode) => boolean,
+): ErrorNode;
 
 export function parseErrors(
-  error: Error | string | Array<Error | string | ErrorNode>,
+  error: Error | string | ErrorChainNode,
   options?: Options,
-): Array<ErrorNode>;
+): ErrorChainNode;
 
-export function printErrors(errors: Error | Array<Error | ErrorNode>, options?: Options): string;
+export function printErrors(errors: Error | ErrorChainNode, options?: Options): string;
 
-export function cleanErrors(errors: Array<ErrorNode>): Array<ErrorNode>;
+export function cleanErrors(
+  errors: ErrorChainNode,
+  isInternalFrame?: (frame: FrameNode) => boolean,
+): ErrorChainNode;

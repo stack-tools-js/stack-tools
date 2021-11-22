@@ -39,7 +39,7 @@ function parseError(error, options = {}) {
   } else if (typeof error === 'string') {
     return __parseError(error, options);
   } else if (isNode(error)) {
-    return frames ? error : { ...error, frames: undefined };
+    return baseParseError(error);
   } else {
     throw new TypeError(
       'error argument to parseError must be an Error, string, or parseError(error)',
