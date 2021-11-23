@@ -62,12 +62,10 @@ class PrintVisitor extends Visitor {
   }
 
   Error(error) {
-    const { frames } = this.options;
     const header = this.ErrorHeader(error);
+    const frames = this.Frames(error.frames);
 
-    return frames && error.frames && error.frames.length
-      ? `${header}\n${this.Frames(error.frames)}`
-      : header;
+    return frames ? `${header}\n${frames}` : header;
   }
 
   ErrorHeader(error) {
@@ -90,7 +88,8 @@ class PrintVisitor extends Visitor {
   }
 
   Frames(frames) {
-    return frames.map((frame) => this.visit(frame)).join('\n');
+    const { options } = this;
+    return frames && options.frames ? frames.map((frame) => this.visit(frame)).join('\n') : '';
   }
 
   Frame(frame) {

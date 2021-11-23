@@ -48,8 +48,10 @@ export class Visitors<O extends Record<string, unknown>> {
 
   ErrorChain?(chain: ErrorChainNode): unknown;
   Error?(error: ErrorNode): unknown;
+  ErrorHeader?(error: ErrorNode): unknown;
   ErrorName?(name: ErrorNameNode): unknown;
   ErrorMessage?(message: ErrorMessageNode): unknown;
+  Frames?(error: Array<FrameNode> | undefined): unknown;
   Frame?(frame: FrameNode): unknown;
   TextFrame?(frame: TextFrameNode): unknown;
 }
@@ -61,8 +63,10 @@ export class PrintVisitors<O extends { frames?: boolean }> extends Visitors<O> {
 
   ErrorChain(chain: ErrorChainNode): string;
   Error(error: ErrorNode): string;
+  ErrorHeader(error: ErrorNode): string;
   ErrorName(name: ErrorNameNode): string;
   ErrorMessage(message: ErrorMessageNode): string;
+  Frames(error: Array<FrameNode> | undefined): string;
   Frame(frame: FrameNode): string;
   TextFrame(frame: TextFrameNode): string;
 }
