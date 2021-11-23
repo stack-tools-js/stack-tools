@@ -144,6 +144,8 @@ export class Visitors<O extends Record<string, unknown>> extends BaseVisitors<O>
   URILocator?(locator: URILocatorNode): unknown;
   Locator?(locator: LocatorNode): unknown;
   Position?(position: PositionNode): unknown;
+  Frames?(error: Array<FrameNode> | undefined): unknown;
+  ErrorHeader?(error: ErrorNode): unknown;
   Error?(error: ErrorNode): unknown;
   ErrorChain?(error: ErrorChainNode): unknown;
 }
@@ -167,6 +169,8 @@ export class PrintVisitors<O extends { frames?: boolean }> extends BasePrintVisi
   URILocator(locator: URILocatorNode): string;
   Locator(locator: LocatorNode): string;
   Position(position: PositionNode): string;
+  Frames(error: Array<FrameNode> | undefined): string;
+  ErrorHeader(error: ErrorNode): string;
   Error(error: ErrorNode): string;
   ErrorChain(error: ErrorChainNode): string;
 }
