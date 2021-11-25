@@ -8,6 +8,7 @@ export type Options = {
   // I expect that most users will want to leave strict mode disabled
   strict?: boolean;
   frames?: boolean;
+  parseFrames?: boolean;
 };
 
 export function parseFrame(error: Error | FrameNode | string): FrameNode;

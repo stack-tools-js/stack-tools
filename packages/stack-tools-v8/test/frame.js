@@ -3,7 +3,8 @@ const { parseFrame, isInternalFrame, getAbsoluteSitePath } = require('@stack-too
 const { nativeFrame, fileFooPath, fileFooFrame } = require('./fixtures/error');
 
 test('parseFrame', (t) => {
-  t.throws(() => parseFrame('2'));
+  t.is(parseFrame(nativeFrame), nativeFrame);
+  t.throws(() => parseFrame(1));
 });
 
 test('isInternalFrame', (t) => {
