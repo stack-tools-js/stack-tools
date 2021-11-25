@@ -35,14 +35,14 @@ export const nodeTypes: Record<NodeTypes, true>;
 
 export type Context = Record<never, never>;
 
-export class Visitors<O extends Record<string, unknown>> {
+export class Visitor<O extends Record<string, unknown>> {
   options: O;
 
   static visit(node: Node, options: any): unknown;
 
   static suffixMatcher: RegExp;
 
-  constructor(context: Context, options: O);
+  constructor(context: Context, options?: O);
 
   visit(node: Node): unknown;
 
@@ -56,7 +56,7 @@ export class Visitors<O extends Record<string, unknown>> {
   TextFrame?(frame: TextFrameNode): unknown;
 }
 
-export class PrintVisitors<O extends { frames?: boolean }> extends Visitors<O> {
+export class PrintVisitor<O extends { frames?: boolean }> extends Visitor<O> {
   static visit(node: Node, options: any): string;
 
   visit(node: Node): string;
@@ -71,4 +71,4 @@ export class PrintVisitors<O extends { frames?: boolean }> extends Visitors<O> {
   TextFrame(frame: TextFrameNode): string;
 }
 
-export function printNode(node: Node, options: { frames?: boolean }): string;
+export function printNode(node: Node, options?: { frames?: boolean }): string;

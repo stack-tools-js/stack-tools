@@ -12,7 +12,7 @@ const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
 function __parseError(error, options = {}) {
-  const { strict = false, frames = true } = options;
+  const { strict = false, frames = true, parseFrames = true } = options;
   const {
     type,
     header,
@@ -22,14 +22,19 @@ function __parseError(error, options = {}) {
   return {
     type,
     ...parseHeader(header),
-    frames: frames && parsedFrames ? parsedFrames.map((frame) => parseFrame(frame)) : undefined,
+    frames:
+      frames && parsedFrames
+        ? parsedFrames.map((frame) =>
+            parseFrames ? parseFrame(frame) : { type: 'TextFrame', text: frame },
+          )
+        : undefined,
   };
 }
 
 function parseError(error, options = {}) {
-  const { strict = false, frames = true } = options;
+  const { strict = false, frames = true, parseFrames = true } = options;
   if (isError(error)) {
-    if (strict && (!frames || !error.stack)) {
+    if (strict && (!parseFrames || !frames || !error.stack)) {
       const parsed = baseParseError(error, { frames });
       parsed.prefix = undefined;
       return parsed;

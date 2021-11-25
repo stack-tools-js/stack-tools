@@ -7,6 +7,7 @@ const {
   fileFooFrame,
   testErrorName,
   testErrorHeader,
+  testErrorFrameStrs,
   testErrorStack,
   testErrorNode,
   makeTestError,
@@ -51,6 +52,10 @@ test('parses an error', (t) => {
   t.deepEqual(parseError(makeTestError(), { frames: false, strict: true }), {
     ...testErrorNode,
     frames: undefined,
+  });
+  t.deepEqual(parseError(testErrorStack, { parseFrames: false, strict: true }), {
+    ...testErrorNode,
+    frames: testErrorFrameStrs.map((text) => ({ type: 'TextFrame', text })),
   });
   t.is(parseError(testErrorNode), testErrorNode);
 

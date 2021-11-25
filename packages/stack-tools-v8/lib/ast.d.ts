@@ -1,7 +1,7 @@
 import type {
   NodeTypes as BaseNodeTypes,
-  Visitors as BaseVisitors,
-  PrintVisitors as BasePrintVisitors,
+  Visitor as BaseVisitor,
+  PrintVisitor as BasePrintVisitor,
   ErrorNameNode,
   ErrorMessageNode,
   TextFrameNode,
@@ -125,7 +125,7 @@ export const nodeTypes: Record<NodeTypes, true>;
 
 export type Context = Record<never, never>;
 
-export class Visitors<O extends Record<string, unknown>> extends BaseVisitors<O> {
+export class Visitor<O extends Record<string, unknown>> extends BaseVisitor<O> {
   static visit(node: Node, options: any): unknown;
 
   visit(node: Node): unknown;
@@ -150,7 +150,7 @@ export class Visitors<O extends Record<string, unknown>> extends BaseVisitors<O>
   ErrorChain?(error: ErrorChainNode): unknown;
 }
 
-export class PrintVisitors<O extends { frames?: boolean }> extends BasePrintVisitors<O> {
+export class PrintVisitor<O extends { frames?: boolean }> extends BasePrintVisitor<O> {
   static visit(node: Node, options: any): string;
 
   visit(node: Node): string;
@@ -174,3 +174,5 @@ export class PrintVisitors<O extends { frames?: boolean }> extends BasePrintVisi
   Error(error: ErrorNode): string;
   ErrorChain(error: ErrorChainNode): string;
 }
+
+export function printNode(node: Node, options?: { frames?: boolean }): string;

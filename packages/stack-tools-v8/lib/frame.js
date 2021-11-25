@@ -55,33 +55,40 @@ function scoreCallSite(callSite, p = 0) {
   return score;
 }
 
-function parseFrame(str) {
-  try {
-    return parseFrameStrict(str);
-  } catch (e) {
-    // The ambiguous grammar is more powerful, but returns multiple interpretations
-    const frames = parse(FrameGrammar, str);
+function parseFrame(frame) {
+  if (typeof frame === 'string') {
+    try {
+      return parseFrameStrict(frame);
+    } catch (e) {
+      // The ambiguous grammar is more powerful, but returns multiple interpretations
+      const frames = parse(FrameGrammar, frame);
 
-    // Therefore we must make some decisions about what is most likely to be correct
-    let best = null;
-    let bestScore = -1;
-    let score = 0;
+      // Therefore we must make some decisions about what is most likely to be correct
+      let best = null;
+      let bestScore = -1;
+      let score = 0;
 
-    for (const frame of frames) {
-      if (frame.type === 'CallSiteFrame') {
-        score = scoreCallSite(frame.callSite);
-        if (frame.evalCallSite) score += scoreCallSite(frame.evalCallSite, 8);
-      } else {
-        score += 2 ^ 16;
+      for (const frame of frames) {
+        if (frame.type === 'CallSiteFrame') {
+          score = scoreCallSite(frame.callSite);
+          if (frame.evalCallSite) score += scoreCallSite(frame.evalCallSite, 8);
+          /* c8 ignore next 3 */
+        } else {
+          // We should never reach this spot as only call site frames are ambiguous
+        }
+
+        if (score > bestScore) {
+          bestScore = score;
+          best = frame;
+        }
       }
 
-      if (score > bestScore) {
-        bestScore = score;
-        best = frame;
-      }
+      return best;
     }
-
-    return best;
+  } else if (isNode(frame)) {
+    return frame;
+  } else {
+    throw new TypeError('frame argument to parseFrame must be string or FrameNode');
   }
 }
 
