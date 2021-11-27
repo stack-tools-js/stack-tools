@@ -1,4 +1,9 @@
-const { isInternalFrame: isInternalFrameV8 } = require('@stack-tools/v8-tools');
+const {
+  isInternalFrame: isInternalFrameV8,
+  getAbsoluteSitePath: getAbsoluteSitePathV8,
+} = require('@stack-tools/v8-tools');
+
+const processCwd = process.cwd();
 
 const natives = [
   ...['bootstrap_node', 'node', 'internal/.*?'].map(
@@ -26,4 +31,9 @@ function isInternalFrame(node) {
   }
 }
 
-module.exports = { isInternalFrame };
+function getAbsoluteSitePath(node, options = {}) {
+  const { cwd = processCwd } = options;
+  return getAbsoluteSitePathV8(node, { ...options, cwd });
+}
+
+module.exports = { isInternalFrame, getAbsoluteSitePath };

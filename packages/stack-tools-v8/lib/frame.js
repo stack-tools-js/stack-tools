@@ -1,4 +1,5 @@
 const { Grammar } = require('nearley');
+const { resolve } = require('path');
 
 const { parseFrameStrict } = require('./internal/frame-strict.js');
 const { parse } = require('./internal/nearley/util.js');
@@ -112,13 +113,17 @@ function isInternalFrame(node) {
   throw new TypeError('node argument to isInternalFrame must be a FrameNode or SiteNode');
 }
 
-function __getAbsoluteSitePath(site) {
+function __getAbsoluteSitePath(site, options) {
+  const { cwd } = options;
   if (site.type === 'FileSite') {
     const { locator } = site;
     if (locator.type === 'PathLocator') {
       const { path } = locator;
       // we have no way of knowing what relative paths are relative to, so discard them
       if (path.startsWith('/')) return path;
+      else if (path.startsWith('.')) {
+        return resolve(cwd, path);
+      }
     } else if (locator.type === 'URILocator') {
       const { scheme, path } = locator;
 
@@ -128,12 +133,14 @@ function __getAbsoluteSitePath(site) {
   return null;
 }
 
-function getAbsoluteSitePath(node) {
+function getAbsoluteSitePath(node, options = {}) {
   if (isNode(node)) {
     if (node.type.endsWith('Frame')) {
-      return node.type === 'CallSiteFrame' ? __getAbsoluteSitePath(node.callSite.site) : null;
+      return node.type === 'CallSiteFrame'
+        ? __getAbsoluteSitePath(node.callSite.site, options)
+        : null;
     } else if (node.type.endsWith('Site')) {
-      return __getAbsoluteSitePath(node);
+      return __getAbsoluteSitePath(node, options);
     }
   }
 

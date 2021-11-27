@@ -4,7 +4,8 @@
 function id(x) { return x[0]; }
 
 const { stringFrom, get } = require('./util.js');
-const { lexer,
+const {
+  lexer,
   buildFrame,
   buildEvalFrame,
   buildCallSite,

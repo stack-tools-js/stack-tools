@@ -1,6 +1,7 @@
 const test = require('ava');
 const { parseFrame, isInternalFrame, getAbsoluteSitePath } = require('@stack-tools/v8-tools');
 const { nativeFrame, fileFooPath, fileFooFrame } = require('./fixtures/error');
+const { buildSiteFrame } = require('./fixtures/frame');
 
 test('parseFrame', (t) => {
   t.is(parseFrame(nativeFrame), nativeFrame);
@@ -15,24 +16,6 @@ test('isInternalFrame', (t) => {
 });
 
 test('getAbsoluteSitePath', (t) => {
-  const buildSiteFrame = (locator) => {
-    return {
-      type: 'CallSiteFrame',
-      callSite: {
-        call: undefined,
-        site: {
-          type: 'FileSite',
-          locator,
-          position: {
-            type: 'Position',
-            line: 1,
-            column: 1,
-          },
-        },
-      },
-    };
-  };
-
   t.is(getAbsoluteSitePath(nativeFrame), null);
   t.is(
     getAbsoluteSitePath(buildSiteFrame({ type: 'PathLocator', path: '/home/foo.js' })),

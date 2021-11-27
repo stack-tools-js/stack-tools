@@ -1,7 +1,8 @@
 const test = require('ava');
-const { isInternalFrame } = require('@stack-tools/node-tools');
+const { isInternalFrame, getAbsoluteSitePath } = require('@stack-tools/node-tools');
 
-const { cjsLoaderFrame } = require('./fixtures/error.js');
+const { cjsLoaderFrame, nativeFrame } = require('./fixtures/error');
+const { buildSiteFrame } = require('../../stack-tools-v8/test/fixtures/frame');
 
 test('isInternalFrame', (t) => {
   t.true(
@@ -26,4 +27,14 @@ test('isInternalFrame', (t) => {
   );
   t.false(isInternalFrame({ type: 'OmittedFrame' }));
   t.throws(() => isInternalFrame({ type: 'Bork' }));
+});
+
+test('getAbsoluteSitePath', (t) => {
+  t.is(getAbsoluteSitePath(nativeFrame), null);
+  t.is(
+    getAbsoluteSitePath(buildSiteFrame({ type: 'PathLocator', path: './home/foo.js' }), {
+      cwd: '/',
+    }),
+    '/home/foo.js',
+  );
 });

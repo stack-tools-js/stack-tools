@@ -4,30 +4,25 @@ const { parseError: baseParseError, printError: basePrintError } = require('stac
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const { parseFrames } = require('./internal/error.js');
 const { parseHeader } = require('./internal/header.js');
-const { parseFrame, isInternalFrame } = require('./frame.js');
+const { isInternalFrame } = require('./frame.js');
 const { printNode, isNode } = require('./visit.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
 function __parseError(error, options = {}) {
-  const { strict = false, frames = true, parseFrames = true } = options;
-  const {
-    type,
-    header,
-    frames: parsedFrames,
-  } = strict ? parseUnambiguous(ErrorGrammar, error) : parseUnambiguous(ErrorsGrammar, error)[0];
+  const { strict = false } = options;
+  const parsedError = strict
+    ? parseUnambiguous(ErrorGrammar, error)
+    : parseUnambiguous(ErrorsGrammar, error).errors[0];
+  const { type, header, frames } = parsedError;
 
   return {
     type,
     ...parseHeader(header),
-    frames:
-      frames && parsedFrames
-        ? parsedFrames.map((frame) =>
-            parseFrames ? parseFrame(frame) : { type: 'TextFrame', text: frame },
-          )
-        : undefined,
+    frames: parseFrames(frames, options),
   };
 }
 
@@ -69,11 +64,13 @@ function printError(error, options = {}) {
 
 function __cleanError(error, predicate) {
   const { frames } = error;
-  const cleaned = frames.filter((frame) => !predicate(frame));
-  if (frames.length && !cleaned.length) {
-    cleaned.push({ type: 'OmittedFrame' });
+  if (frames) {
+    const cleaned = frames.filter((frame) => !predicate(frame));
+    if (frames.length && !cleaned.length) {
+      cleaned.push({ type: 'OmittedFrame' });
+    }
+    error.frames = cleaned;
   }
-  error.frames = cleaned;
   return error;
 }
 

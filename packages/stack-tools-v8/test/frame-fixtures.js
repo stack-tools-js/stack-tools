@@ -1,7 +1,7 @@
 'use strict';
 
 const test = require('ava');
-const cases = require('./fixtures/frame');
+const cases = require('./fixtures/frame-cases');
 const { parseFrame, printFrame } = require('@stack-tools/v8-tools');
 
 const someOnly = cases.some(({ only }) => only);

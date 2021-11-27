@@ -35,11 +35,11 @@ Error ->
 CompleteError -> Header NL:+ Stack
 {% (d) => buildError(d[0], d[2]) %}
 
-Header -> MessageLine (NL MessageLine):* {% (d) => `${d[0]}${stringFrom(d[1].flat())}`.trimRight() %}
+Header -> MessageLine (NL:+ MessageLine):* {% (d) => `${d[0]}${stringFrom(d[1].flat())}`.trimRight() %}
 
 Stack -> Frame (NL Frame):* {% (d) => [d[0], ...d[1].map(d => d[1])] %}
 
-Frame -> %Frame {% (d) => d[0].text %}
+Frame -> %Frame {% (d) => ({type: 'TextFrame', text: d[0].text}) %}
 
 MessageLine -> %MessageLine {% (d) => d[0].text.trimRight() %}
 

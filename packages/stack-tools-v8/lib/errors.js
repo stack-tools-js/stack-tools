@@ -8,31 +8,34 @@ const {
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');
+const { parseFrames } = require('./internal/error.js');
 const { parseHeader, parseChainedHeader } = require('./internal/header.js');
 const { cleanError } = require('./error.js');
-const { parseFrame, isInternalFrame } = require('./frame.js');
+const { isInternalFrame } = require('./frame.js');
 const { printNode, isNode } = require('./visit.js');
 
 const ErrorsGrammar = Grammar.fromCompiled(CompiledErrorGrammar);
 const ErrorGrammar = Grammar.fromCompiled({ ...CompiledErrorGrammar, ParserStart: 'Error' });
 
 function __parseError(error, options = {}) {
-  const { strict = false, frames = true } = options;
+  const { strict = false } = options;
 
   const parsedErrors = strict
     ? [parseUnambiguous(ErrorGrammar, error)]
     : parseUnambiguous(ErrorsGrammar, error);
 
-  return parsedErrors.map((error, i) => {
-    const { type, header, frames: textFrames } = error;
+  parsedErrors.errors = parsedErrors.errors.map((error, i) => {
+    const { type, header } = error;
     const parsedHeader = i === 0 ? parseHeader(header) : parseChainedHeader(header);
 
     return {
       type,
       ...parsedHeader,
-      frames: frames ? textFrames.map((frame) => parseFrame(frame)) : undefined,
+      frames: parseFrames(error.frames, options),
     };
   });
+
+  return parsedErrors;
 }
 
 function parseErrors(errors, options = {}) {
@@ -40,9 +43,9 @@ function parseErrors(errors, options = {}) {
 
   let parsedErrors;
   if (isError(errors)) {
-    parsedErrors = getErrors(errors).flatMap((error) => __parseError(error.stack, options));
+    parsedErrors = getErrors(errors).flatMap((error) => __parseError(error.stack, options).errors);
   } else if (typeof errors === 'string') {
-    parsedErrors = __parseError(errors, options);
+    parsedErrors = __parseError(errors, options).errors;
   } else if (isNode(errors, 'ErrorChain')) {
     return baseParseErrors(errors, { frames });
   } else {
