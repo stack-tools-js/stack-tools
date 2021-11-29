@@ -49,8 +49,8 @@ export class Visitor<O extends Record<string, unknown>> {
   ErrorChain?(chain: ErrorChainNode): unknown;
   Error?(error: ErrorNode): unknown;
   ErrorHeader?(error: ErrorNode): unknown;
-  ErrorName?(name: ErrorNameNode): unknown;
-  ErrorMessage?(message: ErrorMessageNode): unknown;
+  ErrorName?(name: ErrorNameNode | undefined): unknown;
+  ErrorMessage?(message: ErrorMessageNode | undefined): unknown;
   Frames?(error: Array<FrameNode> | undefined): unknown;
   Frame?(frame: FrameNode): unknown;
   TextFrame?(frame: TextFrameNode): unknown;

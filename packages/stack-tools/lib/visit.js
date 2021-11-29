@@ -69,18 +69,13 @@ class PrintVisitor extends Visitor {
   }
 
   ErrorHeader(error) {
-    const name = error.name && this.visit(error.name);
-    const message = error.message && this.visit(error.message);
-    // prettier-ignore
-    return name && message
-      ? `${name}: ${message}`
-      : message
-        ? `Error: ${message}`
-        : name || 'Error';
+    const name = error.name ? this.visit(error.name) : 'Error';
+    const message = error.message ? this.visit(error.message) : '';
+    return message ? `${name}: ${message}` : name;
   }
 
   ErrorName(name) {
-    return name.name;
+    return name.name || 'Error';
   }
 
   ErrorMessage(message) {
