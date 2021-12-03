@@ -32,27 +32,6 @@ class V8PrintVisitor extends PrintVisitor {
     return /(?:Frame|Site|Locator)$/;
   }
 
-  ErrorChain(chain) {
-    let str = '';
-    for (let i = 0; i < chain.errors.length; i++) {
-      if (i > 0) str += '\n';
-      const error = chain.errors[i];
-      const { frames } = error;
-      let header;
-      if (i === 0) {
-        header = this.ErrorHeader(error);
-      } else {
-        const { prefix = 'Caused by', name, message } = error;
-
-        header = name || message ? `${prefix}: ${this.ErrorHeader(error)}` : `${prefix}:`;
-      }
-
-      str += frames && frames.length ? `${header}\n${this.Frames(frames)}` : header;
-    }
-
-    return str;
-  }
-
   Frame(frame) {
     return `    at ${this[frame.type](frame)}`;
   }

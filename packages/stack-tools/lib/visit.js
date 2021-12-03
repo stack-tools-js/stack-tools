@@ -3,6 +3,7 @@ const nodeTypes = {
   Error: true,
   ErrorName: true,
   ErrorMessage: true,
+  ErrorPrefix: true,
   TextFrame: true,
 };
 
@@ -11,9 +12,11 @@ const isNode = (node, type) =>
   typeof node === 'object' &&
   (type != null ? node.type === type : nodeTypes[node.type]);
 
-const assertNode = (node) => {
+const assertNode = (node, type) => {
   if (!node.type) {
     throw new TypeError('node argument to visit must have a type');
+  } else if (type && node.type !== type) {
+    throw new TypeError(`expected node to have type ${type}`);
   }
 };
 
@@ -23,10 +26,12 @@ class Visitor {
   }
 
   static get suffixMatcher() {
-    return /(?:Frame)$/;
+    return /$^/;
   }
 
   visit(node) {
+    if (node == null) return node;
+
     assertNode(node);
 
     const { suffixMatcher } = this.constructor;
@@ -44,13 +49,15 @@ class Visitor {
 
 class PrintVisitor extends Visitor {
   constructor(context, options = {}) {
-    super(context, { frames: true, ...options });
+    super(context, { frames: true, brk: '\n', ...options });
+  }
+
+  static get suffixMatcher() {
+    return /(?:Frame)$/;
   }
 
   visit(node) {
-    assertNode(node);
-
-    if (!this[node.type]) {
+    if (node && !this[node.type]) {
       throw new TypeError(`node of type ${node.type} is not printable`);
     }
 
@@ -58,28 +65,46 @@ class PrintVisitor extends Visitor {
   }
 
   ErrorChain(chain) {
-    return chain.errors.map((error) => this.visit(error)).join('\nCaused by: ');
+    return chain.errors
+      .map((error, i) => {
+        assertNode(error, 'Error');
+        const prefix = i === 0 ? undefined : this.visit(error.prefix) || 'Caused by';
+        const hasHeader =
+          (error.name && error.name.name) || (error.message && error.message.message);
+        const body = this.ErrorBody(error);
+
+        return prefix ? `${prefix}:${hasHeader ? ' ' : '\n'}${body}` : body;
+      })
+      .join('\n');
   }
 
   Error(error) {
+    return this.ErrorBody(error) || 'Error';
+  }
+
+  ErrorBody(error) {
     const header = this.ErrorHeader(error);
     const frames = this.Frames(error.frames);
 
-    return frames ? `${header}\n${frames}` : header;
+    return header && frames ? `${header}\n${frames}` : header || frames;
   }
 
   ErrorHeader(error) {
-    const name = error.name ? this.visit(error.name) : 'Error';
-    const message = error.message ? this.visit(error.message) : '';
-    return message ? `${name}: ${message}` : name;
+    const name = this.visit(error.name);
+    const message = this.visit(error.message);
+    return name && message ? `${name}: ${message}` : name ? `${name}:` : message;
   }
 
   ErrorName(name) {
-    return name.name || 'Error';
+    return name.name || undefined;
   }
 
   ErrorMessage(message) {
-    return message.message;
+    return message.message || undefined;
+  }
+
+  ErrorPrefix(prefix) {
+    return prefix.prefix || undefined;
   }
 
   Frames(frames) {

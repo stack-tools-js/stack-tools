@@ -37,7 +37,7 @@ test('eliminates extra whitespace at the beginning end of message and frames', (
   t.deepEqual(parsed, {
     type: 'Error',
     name: { type: 'ErrorName', name: 'ReferenceError' },
-    message: { type: 'ErrorMessage', message: 'a is not defined' },
+    message: { type: 'ErrorMessage', message: '  a is not defined' },
     frames: [nativeFrame],
     prefix: undefined,
   });
@@ -97,7 +97,7 @@ test('cleans an error', (t) => {
 
   t.is(
     cleanError('ReferenceError:  a is not defined\n\nat native '),
-    'ReferenceError: a is not defined\n    at <omitted>',
+    'ReferenceError:  a is not defined\n    at <omitted>',
   );
 });
 

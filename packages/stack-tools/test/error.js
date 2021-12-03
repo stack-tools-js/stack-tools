@@ -69,6 +69,22 @@ test('can replace an error message', (t) => {
   t.throws(() => replaceMessage());
 });
 
+test('can print an empty error', (t) => {
+  t.is(
+    printError(
+      {
+        type: 'Error',
+        prefix: undefined,
+        name: undefined,
+        message: undefined,
+        frames: undefined,
+      },
+      { frames: false },
+    ),
+    'Error',
+  );
+});
+
 test('can print an error without frames', (t) => {
   t.is(printError(makeTestError(), { frames: false }), testErrorHeader);
 
@@ -76,13 +92,14 @@ test('can print an error without frames', (t) => {
     printError(
       {
         type: 'Error',
-        name: { type: 'ErrorName', name: '' },
+        prefix: undefined,
+        name: { type: 'ErrorName', name: 'Error' },
         message: { type: 'ErrorMessage', message: '' },
         frames: testErrorFrames,
       },
       { frames: false },
     ),
-    'Error',
+    'Error:',
   );
   t.is(
     printError(
@@ -94,7 +111,7 @@ test('can print an error without frames', (t) => {
       },
       { frames: false },
     ),
-    'Error: foo',
+    'foo',
   );
   t.is(
     printError(
@@ -105,7 +122,7 @@ test('can print an error without frames', (t) => {
       },
       { frames: false },
     ),
-    'TypeError',
+    'TypeError:',
   );
 });
 

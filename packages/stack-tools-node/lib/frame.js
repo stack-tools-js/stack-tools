@@ -3,10 +3,12 @@ const {
   getAbsoluteSitePath: getAbsoluteSitePathV8,
 } = require('@stack-tools/v8-tools');
 
+const { builtinModules } = require('module');
+
 const processCwd = process.cwd();
 
 const natives = [
-  ...['bootstrap_node', 'node', 'internal/.*?'].map(
+  ...['bootstrap_node', 'node', 'internal/.*?', ...builtinModules].map(
     (n) => new RegExp(`^(?:node:)?${n}(\\.[cm]?js)?$`),
   ),
   /\/\.node-spawn-wrap-\w+-\w+\/node$/,

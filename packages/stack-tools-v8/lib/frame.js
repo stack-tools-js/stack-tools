@@ -98,7 +98,7 @@ function printFrame(frame) {
 }
 
 function __isInternalSite(site) {
-  return site.type === 'NativeSite' || site.type === 'IndexSite';
+  return site.type === 'NativeSite' || site.type === 'AnonymousSite' || site.type === 'IndexSite';
 }
 
 function isInternalFrame(node) {

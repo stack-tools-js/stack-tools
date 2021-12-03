@@ -26,7 +26,7 @@ test('can reprint a string error', (t) => {
         at native
     From previous event:
         at native
-    Caused by: ZargothError
+    Caused by: ZargothError:
         at native
     And even before that there was: OriginalError: Where it all began!
         And sometimes there is more text
@@ -51,14 +51,14 @@ test('can reprint a string error', (t) => {
         name: undefined,
         message: undefined,
         frames,
-        prefix: 'From previous event',
+        prefix: { type: 'ErrorPrefix', prefix: 'From previous event' },
       },
       {
         type: 'Error',
         name: { type: 'ErrorName', name: 'ZargothError' },
         message: undefined,
         frames,
-        prefix: undefined,
+        prefix: { type: 'ErrorPrefix', prefix: 'Caused by' },
       },
       {
         type: 'Error',
@@ -68,7 +68,7 @@ test('can reprint a string error', (t) => {
           message: 'Where it all began!\n    And sometimes there is more text',
         },
         frames,
-        prefix: 'And even before that there was',
+        prefix: { type: 'ErrorPrefix', prefix: 'And even before that there was' },
       },
     ]),
   );
@@ -134,7 +134,7 @@ test('when causal headers are present in stack', (t) => {
         name: { type: 'ErrorName', name: looseErrorName },
         message: { type: 'ErrorMessage', message: looseErrorMessage },
         frames: [nativeFrame],
-        prefix: undefined,
+        prefix: { type: 'ErrorPrefix', prefix: 'Caused by' },
       },
       testCauseNode,
     ]),

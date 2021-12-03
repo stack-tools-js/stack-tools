@@ -8,6 +8,11 @@ export type ErrorMessageNode = {
   message: string;
 };
 
+export type ErrorPrefixNode = {
+  type: 'ErrorPrefix';
+  prefix: string;
+};
+
 export type TextFrameNode = {
   type: 'TextFrame';
   text: string;
@@ -17,6 +22,7 @@ export type FrameNode = TextFrameNode;
 
 export type ErrorNode = {
   type: 'Error';
+  prefix: ErrorPrefixNode | undefined;
   name: ErrorNameNode | undefined;
   message: ErrorMessageNode | undefined;
   frames: Array<FrameNode> | undefined;
@@ -27,9 +33,15 @@ export type ErrorChainNode = {
   errors: Array<ErrorNode>;
 };
 
-export type Node = ErrorChainNode | ErrorNode | ErrorNameNode | ErrorMessageNode | TextFrameNode;
+export type Node =
+  | ErrorChainNode
+  | ErrorNode
+  | ErrorNameNode
+  | ErrorMessageNode
+  | ErrorPrefixNode
+  | TextFrameNode;
 
-export type NodeTypes = 'ErrorChain' | 'Error' | 'ErrorName' | 'ErrorMessage' | 'TextFrame';
+export type NodeTypes = Node['type'];
 
 export const nodeTypes: Record<NodeTypes, true>;
 
@@ -44,13 +56,15 @@ export class Visitor<O extends Record<string, unknown>> {
 
   constructor(context: Context, options?: O);
 
-  visit(node: Node): unknown;
+  visit(node: Node | undefined): unknown;
 
   ErrorChain?(chain: ErrorChainNode): unknown;
   Error?(error: ErrorNode): unknown;
+  ErrorBody?(error: ErrorNode): unknown;
   ErrorHeader?(error: ErrorNode): unknown;
-  ErrorName?(name: ErrorNameNode | undefined): unknown;
-  ErrorMessage?(message: ErrorMessageNode | undefined): unknown;
+  ErrorName?(name: ErrorNameNode): unknown;
+  ErrorMessage?(message: ErrorMessageNode): unknown;
+  ErrorPrefix?(message: ErrorPrefixNode): unknown;
   Frames?(error: Array<FrameNode> | undefined): unknown;
   Frame?(frame: FrameNode): unknown;
   TextFrame?(frame: TextFrameNode): unknown;
@@ -59,14 +73,16 @@ export class Visitor<O extends Record<string, unknown>> {
 export class PrintVisitor<O extends { frames?: boolean }> extends Visitor<O> {
   static visit(node: Node, options: any): string;
 
-  visit(node: Node): string;
+  visit(node: Node | undefined): string | undefined;
 
   ErrorChain(chain: ErrorChainNode): string;
   Error(error: ErrorNode): string;
-  ErrorHeader(error: ErrorNode): string;
-  ErrorName(name: ErrorNameNode): string;
-  ErrorMessage(message: ErrorMessageNode): string;
-  Frames(error: Array<FrameNode> | undefined): string;
+  ErrorBody(error: ErrorNode): string | undefined;
+  ErrorHeader(error: ErrorNode): string | undefined;
+  ErrorName(name: ErrorNameNode): string | undefined;
+  ErrorMessage(message: ErrorMessageNode): string | undefined;
+  ErrorPrefix(message: ErrorPrefixNode): string | undefined;
+  Frames(error: Array<FrameNode> | undefined): string | undefined;
   Frame(frame: FrameNode): string;
   TextFrame(frame: TextFrameNode): string;
 }

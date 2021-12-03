@@ -1,9 +1,9 @@
 import type {
-  NodeTypes as BaseNodeTypes,
   Visitor as BaseVisitor,
   PrintVisitor as BasePrintVisitor,
   ErrorNameNode,
   ErrorMessageNode,
+  ErrorPrefixNode,
   TextFrameNode,
 } from 'stack-tools';
 
@@ -79,6 +79,7 @@ export type FrameNode = TextFrameNode | CallSiteFrameNode | OmittedFrameNode;
 
 export type ErrorNode = {
   type: 'Error';
+  prefix: ErrorPrefixNode | undefined;
   name: ErrorNameNode | undefined;
   message: ErrorMessageNode | undefined;
   frames: Array<FrameNode> | undefined;
@@ -92,6 +93,7 @@ export type ErrorChainNode = {
 export type Node =
   | ErrorNameNode
   | ErrorMessageNode
+  | ErrorPrefixNode
   | TextFrameNode
   | CallSiteFrameNode
   | OmittedFrameNode
@@ -107,19 +109,7 @@ export type Node =
   | ErrorNode
   | ErrorChainNode;
 
-export type NodeTypes =
-  | BaseNodeTypes
-  | 'CallSiteFrame'
-  | 'OmittedFrame'
-  | 'Call'
-  | 'AnonymousSite'
-  | 'NativeSite'
-  | 'FileSite'
-  | 'IndexSite'
-  | 'AnonymousLocator'
-  | 'PathLocator'
-  | 'URILocator'
-  | 'Position';
+export type NodeTypes = Node['type'];
 
 export const nodeTypes: Record<NodeTypes, true>;
 
@@ -128,7 +118,7 @@ export type Context = Record<never, never>;
 export class Visitor<O extends Record<string, unknown>> extends BaseVisitor<O> {
   static visit(node: Node, options: any): unknown;
 
-  visit(node: Node): unknown;
+  visit(node: Node | undefined): unknown;
 
   CallSiteFrame?(frame: CallSiteFrameNode): unknown;
   OmittedFrame?(frame: OmittedFrameNode): unknown;
@@ -146,6 +136,7 @@ export class Visitor<O extends Record<string, unknown>> extends BaseVisitor<O> {
   Position?(position: PositionNode): unknown;
   Frames?(error: Array<FrameNode> | undefined): unknown;
   ErrorHeader?(error: ErrorNode): unknown;
+  ErrorBody?(error: ErrorNode): unknown;
   Error?(error: ErrorNode): unknown;
   ErrorChain?(error: ErrorChainNode): unknown;
 }
@@ -153,7 +144,7 @@ export class Visitor<O extends Record<string, unknown>> extends BaseVisitor<O> {
 export class PrintVisitor<O extends { frames?: boolean }> extends BasePrintVisitor<O> {
   static visit(node: Node, options: any): string;
 
-  visit(node: Node): string;
+  visit(node: Node | undefined): string | undefined;
 
   CallSiteFrame(frame: CallSiteFrameNode): string;
   OmittedFrame(frame: OmittedFrameNode): string;
@@ -169,8 +160,9 @@ export class PrintVisitor<O extends { frames?: boolean }> extends BasePrintVisit
   URILocator(locator: URILocatorNode): string;
   Locator(locator: LocatorNode): string;
   Position(position: PositionNode): string;
-  Frames(error: Array<FrameNode> | undefined): string;
-  ErrorHeader(error: ErrorNode): string;
+  Frames(error: Array<FrameNode> | undefined): string | undefined;
+  ErrorHeader(error: ErrorNode): string | undefined;
+  ErrorBody(error: ErrorNode): string | undefined;
   Error(error: ErrorNode): string;
   ErrorChain(error: ErrorChainNode): string;
 }
