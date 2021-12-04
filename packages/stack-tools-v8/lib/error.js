@@ -59,7 +59,7 @@ function printError(error, options = {}) {
     } else {
       return printNode(parseError(error, options));
     }
-  } else if (isNode(error, 'ErrorChain')) {
+  } else if (isNode(error, 'Error')) {
     return printNode(error, options);
   } else {
     throw new TypeError('error argument to printError must be an Error, or parseError(error)');

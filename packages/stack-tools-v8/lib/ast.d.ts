@@ -168,3 +168,4 @@ export class PrintVisitor<O extends { frames?: boolean }> extends BasePrintVisit
 }
 
 export function printNode(node: Node, options?: { frames?: boolean }): string;
+export function isNode<T extends NodeTypes>(node: unknown, type?: T): node is Node & { type: T };

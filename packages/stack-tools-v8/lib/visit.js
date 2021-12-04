@@ -15,7 +15,10 @@ const nodeTypes = {
   Position: true,
 };
 
-const isNode = (node) => node != null && typeof node === 'object' && nodeTypes[node.type];
+const isNode = (node, type) =>
+  node != null &&
+  typeof node === 'object' &&
+  (type != null ? node.type === type : !!nodeTypes[node.type]);
 
 function printCallSite(callSite, visitor) {
   const { call, site } = callSite;

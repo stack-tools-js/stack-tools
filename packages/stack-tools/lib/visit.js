@@ -10,7 +10,7 @@ const nodeTypes = {
 const isNode = (node, type) =>
   node != null &&
   typeof node === 'object' &&
-  (type != null ? node.type === type : nodeTypes[node.type]);
+  (type != null ? node.type === type : !!nodeTypes[node.type]);
 
 const assertNode = (node, type) => {
   if (!node.type) {
