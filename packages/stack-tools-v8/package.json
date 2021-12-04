@@ -1,6 +1,6 @@
 {
   "name": "@stack-tools/v8-tools",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Tools for printing and parsing v8 errors and their stacks",
   "license": "MIT",
   "repository": {
@@ -30,6 +30,6 @@
     "iserror": "0.0.2",
     "moo": "^0.5.1",
     "nearley": "^2.20.1",
-    "stack-tools": "^0.2.0"
+    "stack-tools": "^0.2.1"
   }
 }
