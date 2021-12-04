@@ -2,6 +2,8 @@ import type { ErrorNode, ErrorChainNode } from './ast';
 
 export * from './ast';
 
+export function isError(value: unknown): value is Error;
+
 export function getErrors(error: Error): Array<Error>;
 
 export function replaceMessage(

@@ -1,6 +1,5 @@
 const { Grammar } = require('nearley');
-const isError = require('iserror');
-const { parseError: baseParseError, printError: basePrintError } = require('stack-tools');
+const { isError, parseError: baseParseError, printError: basePrintError } = require('stack-tools');
 
 const { parseUnambiguous } = require('./internal/nearley/util.js');
 const CompiledErrorGrammar = require('./internal/nearley/error.js');

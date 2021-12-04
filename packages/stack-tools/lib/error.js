@@ -1,4 +1,4 @@
-const isError = require('iserror');
+const isError = require('lodash.iserror');
 
 const { isNode, printNode } = require('./visit.js');
 
@@ -93,4 +93,4 @@ function printError(error, options = {}) {
   }
 }
 
-module.exports = { parseError, replaceMessage, printError };
+module.exports = { isError, parseError, replaceMessage, printError };

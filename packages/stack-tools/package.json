@@ -24,6 +24,6 @@
     "url": "https://github.com/conartist6"
   },
   "dependencies": {
-    "iserror": "0.0.2"
+    "lodash.iserror": "^3.1.1"
   }
 }

@@ -1,4 +1,4 @@
-const isError = require('iserror');
+const isError = require('lodash.iserror');
 
 const { parseError, printError } = require('./error.js');
 const { printNode, isNode } = require('./visit.js');

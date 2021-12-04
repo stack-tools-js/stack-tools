@@ -1,6 +1,6 @@
 const { Grammar } = require('nearley');
-const isError = require('iserror');
 const {
+  isError,
   printErrors: basePrintErrors,
   parseErrors: baseParseErrors,
   parseError: baseParseError,

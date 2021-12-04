@@ -27,7 +27,6 @@
     "url": "https://github.com/conartist6"
   },
   "dependencies": {
-    "iserror": "0.0.2",
     "moo": "^0.5.1",
     "nearley": "^2.20.1",
     "stack-tools": "^0.2.1"
