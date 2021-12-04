@@ -1,6 +1,6 @@
 {
   "name": "@stack-tools/node-tools",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Tools for printing and parsing node errors and their stacks",
   "license": "MIT",
   "repository": {
@@ -24,6 +24,6 @@
     "url": "https://github.com/conartist6"
   },
   "dependencies": {
-    "@stack-tools/v8-tools": "^0.2.3"
+    "@stack-tools/v8-tools": "^0.2.4"
   }
 }
