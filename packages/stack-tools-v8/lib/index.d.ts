@@ -1,5 +1,6 @@
-import type { ErrorNode, ErrorChainNode, FrameNode, SiteNode } from './ast';
+export { isError } from 'stack-tools';
 
+import type { ErrorNode, ErrorChainNode, FrameNode, SiteNode } from './ast';
 export * from './ast';
 
 export type Options = {
