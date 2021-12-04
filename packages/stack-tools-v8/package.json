@@ -1,6 +1,6 @@
 {
   "name": "@stack-tools/v8-tools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tools for printing and parsing v8 errors and their stacks",
   "license": "MIT",
   "repository": {
@@ -27,9 +27,9 @@
     "url": "https://github.com/conartist6"
   },
   "dependencies": {
-    "stack-tools": "0.1.0",
     "iserror": "0.0.2",
     "moo": "^0.5.1",
-    "nearley": "^2.20.1"
+    "nearley": "^2.20.1",
+    "stack-tools": "^0.2.0"
   }
 }

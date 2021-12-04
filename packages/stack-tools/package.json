@@ -1,6 +1,6 @@
 {
   "name": "stack-tools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tools for printing and parsing errors and their stacks",
   "license": "MIT",
   "repository": {
