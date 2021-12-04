@@ -33,7 +33,8 @@ class V8PrintVisitor extends PrintVisitor {
   }
 
   Frame(frame) {
-    return `    at ${this[frame.type](frame)}`;
+    const printed = this[frame.type](frame);
+    return frame.type === 'TextFrame' ? printed : `    at ${printed}`;
   }
 
   OmittedFrame() {

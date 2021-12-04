@@ -78,6 +78,7 @@ test('when causal errors are present in the stack', (t) => {
 test('prints an error', (t) => {
   t.is(printError(makeTestError()), testErrorStack);
   t.is(printError(makeTestError(), { strict: true }), testErrorStack);
+  t.is(printError(makeTestError(), { parseFrames: false }), testErrorStack);
 
   t.is(printError({ ...testErrorNode, frames: undefined }), testErrorHeader);
   t.is(printError({ ...testErrorNode }, { frames: false }), testErrorHeader);
