@@ -12,6 +12,7 @@ const testCauseFrameStrs = testCauseFrames.map((frame) => frame.text);
 const testCauseStack = `${testCauseHeader}\n${testCauseFrameStrs.join('\n')}`;
 const testCauseNode = {
   type: 'Error',
+  prefix: undefined,
   name: { type: 'ErrorName', name: testCauseName },
   message: { type: 'ErrorMessage', message: testCauseMessage },
   frames: testCauseFrames,

@@ -3,6 +3,7 @@ const isError = require('iserror');
 const {
   printErrors: basePrintErrors,
   parseErrors: baseParseErrors,
+  parseError: baseParseError,
   getErrors,
 } = require('stack-tools');
 
@@ -43,7 +44,18 @@ function parseErrors(errors, options = {}) {
 
   let parsedErrors;
   if (isError(errors)) {
-    parsedErrors = getErrors(errors).flatMap((error) => __parseError(error.stack, options).errors);
+    const errors_ = getErrors(errors);
+    parsedErrors = errors_.flatMap((error) => {
+      const { errors: parsedErrors } = __parseError(error.stack, options);
+
+      parsedErrors[0] = {
+        ...baseParseError(error, { frames: false }),
+        prefix: parsedErrors[0].prefix,
+        frames: parsedErrors[0].frames,
+      };
+
+      return parsedErrors;
+    });
   } else if (typeof errors === 'string') {
     parsedErrors = __parseError(errors, options).errors;
   } else if (isNode(errors, 'ErrorChain')) {

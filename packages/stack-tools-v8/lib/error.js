@@ -30,11 +30,15 @@ function parseError(error, options = {}) {
   const { strict = false, frames = true, parseFrames = true } = options;
   if (isError(error)) {
     if (strict && (!parseFrames || !frames || !error.stack)) {
-      const parsed = baseParseError(error, { frames });
-      parsed.prefix = undefined;
-      return parsed;
+      return baseParseError(error, { frames });
     } else {
-      return __parseError(error.stack, options);
+      const { prefix, frames } = __parseError(error.stack, options);
+      return {
+        // Ensure that error.name and error.message overwrite the header of error.stack
+        ...baseParseError(error, { frames: false }),
+        prefix,
+        frames,
+      };
     }
   } else if (typeof error === 'string') {
     return __parseError(error, options);

@@ -105,6 +105,7 @@ test('can print an error without frames', (t) => {
     printError(
       {
         type: 'Error',
+        prefix: undefined,
         name: { type: 'ErrorName', name: '' },
         message: { type: 'ErrorMessage', message: 'foo' },
         frames: undefined,
@@ -117,6 +118,7 @@ test('can print an error without frames', (t) => {
     printError(
       {
         type: 'Error',
+        prefix: undefined,
         name: { type: 'ErrorName', name: 'TypeError' },
         message: { type: 'ErrorMessage', message: '' },
       },

@@ -15,6 +15,7 @@ const testErrorFrameStrs = testErrorFrames.map((frame) => frame.text);
 const testErrorStack = `${testErrorHeader}\n${testErrorFrameStrs.join('\n')}`;
 const testErrorNode = {
   type: 'Error',
+  prefix: undefined,
   name: { type: 'ErrorName', name: testErrorName },
   message: { type: 'ErrorMessage', message: testErrorMessage },
   frames: testErrorFrames,

@@ -16,6 +16,7 @@ function parseError(error, options = {}) {
 
     const node = {
       type: 'Error',
+      prefix: undefined,
       name: { type: 'ErrorName', name },
       message: { type: 'ErrorMessage', message },
       frames: undefined,
